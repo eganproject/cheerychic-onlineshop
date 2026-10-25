@@ -46,7 +46,7 @@
                 </x-form.field>
                 <x-form.field label="Slug (alamat URL)" for="slug" name="slug" hint="Otomatis dari judul. Hindari mengubah slug artikel yang sudah terbit supaya link lama tidak rusak."
                     tip="Bagian akhir alamat artikel. Slug yang memuat kata kunci membantu artikel ditemukan di Google."
-                    :tips="['Pendek, 3–6 kata kunci, mis. cara-memilih-mukena-travel.', 'Buang kata sambung (dan, yang, untuk) dan angka tahun bila artikel akan terus relevan.']">
+                    :tips="['Pendek, 3–6 kata kunci, mis. cara-memilih-daster-busui.', 'Buang kata sambung (dan, yang, untuk) dan angka tahun bila artikel akan terus relevan.']">
                     <div class="flex items-stretch overflow-hidden rounded-xl border border-stone-200 bg-white focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15 @error('slug') border-rose-300 @enderror">
                         <span class="hidden items-center bg-stone-50 px-3 text-sm text-stone-400 sm:flex">{{ str_replace(['https://', 'http://'], '', url('/artikel')) }}/</span>
                         <input id="slug" name="slug" x-model="slug" @input="slugTouched = true" maxlength="170" placeholder="cara-merawat-baterai-hp"
@@ -118,7 +118,7 @@
                 </div>
                 <x-form.input name="meta_title" label="Judul SEO" optional maxlength="70" x-model="metaTitle" :value="$article->meta_title" hint="Idealnya 50–60 karakter."
                     tip="Judul biru yang tampil di hasil pencarian Google dan tab browser. Kosong = memakai judul artikel. Pratinjaunya ada di kotak di atas."
-                    :tips="['Taruh kata kunci utama di depan, mis. “Mukena Travel: 7 Tips Memilih yang Ringkas”.', 'Lebih dari ±60 huruf akan dipotong Google.']" />
+                    :tips="['Taruh kata kunci utama di depan, mis. “Daster Busui: 7 Tips Memilih yang Nyaman”.', 'Lebih dari ±60 huruf akan dipotong Google.']" />
                 <x-form.textarea name="meta_description" label="Deskripsi SEO" optional maxlength="160" rows="2" x-model="metaDescription" :value="$article->meta_description" hint="Idealnya 120–160 karakter."
                     tip="Teks abu-abu di bawah judul pada hasil Google. Kosong = memakai ringkasan."
                     :tips="['Ajak klik dengan menjawab “apa yang didapat pembaca”, dan sebut kata kunci sekali secara alami.']" />
@@ -141,7 +141,7 @@
                 <x-form.date name="published_at" label="Tanggal terbit" optional time :value="$article->published_at" x-model="publishedAt"
                     hint="Kosongkan = terbit sekarang. Isi tanggal mendatang untuk menjadwalkan."
                     tip="Bila status Terbitkan dan tanggal diisi di masa depan, artikel otomatis tampil di toko pada waktu itu (terjadwal). Tanggal ini juga dipakai sebagai tanggal artikel."
-                    :tips="['Jadwalkan artikel menjelang momen, mis. tips mukena untuk Ramadan 2–3 minggu sebelumnya.']" />
+                    :tips="['Jadwalkan artikel menjelang momen, mis. koleksi daster lebaran 2–3 minggu sebelumnya.']" />
                 <p x-show="scheduled" x-cloak class="flex items-start gap-2 rounded-xl bg-sky-50 p-3 text-xs text-sky-800">
                     <x-icon name="clock" class="size-4 shrink-0" /> Artikel akan tampil otomatis di toko pada tanggal tersebut.
                 </p>
@@ -165,7 +165,7 @@
             <div class="card space-y-5 p-6">
                 <x-form.select name="article_category_id" label="Kategori" optional :options="$categories" :selected="$article->article_category_id" placeholder="Tanpa kategori"
                     :hint="$categories->isEmpty() ? 'Belum ada kategori. Tambah di menu Kategori Artikel.' : null"
-                    tip="Mengelompokkan artikel (mis. Tips Ibadah, Perawatan Mukena) supaya pembaca bisa menyaring artikel sejenis." />
+                    tip="Mengelompokkan artikel (mis. Tips Perawatan, Panduan Ukuran) supaya pembaca bisa menyaring artikel sejenis." />
 
                 <x-form.field label="Tag" for="tags" name="tags" optional hint="Ketik lalu tekan Enter. Maks. 10 tag."
                     tip="Kata kunci kecil untuk menghubungkan artikel yang membahas topik serupa."

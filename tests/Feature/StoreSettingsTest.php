@@ -27,15 +27,15 @@ class StoreSettingsTest extends TestCase
     private function payload(array $overrides = []): array
     {
         return array_merge([
-            'name' => 'Albaniah',
-            'full_name' => 'Albaniah Mukena',
+            'name' => 'Cheery Chic',
+            'full_name' => 'Cheery Chic',
             'tagline' => 'Gudangnya aksesoris',
-            'email' => 'halo@albaniah.test',
+            'email' => 'halo@cheerychic.test',
             'whatsapp' => '0812-3456-7890',
             'address' => 'Jl. Dago No. 1, Bandung',
-            'instagram' => 'https://instagram.com/albaniah.official/',
-            'tiktok' => '@albaniah.tiktok',
-            'facebook' => 'https://facebook.com/albaniahtasik',
+            'instagram' => 'https://instagram.com/cheerychic.official/',
+            'tiktok' => '@cheerychic.tiktok',
+            'facebook' => 'https://facebook.com/cheerychic.id',
             'province_id' => '',
             'city_id' => '',
             'district_id' => '',
@@ -61,8 +61,8 @@ class StoreSettingsTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame('6281234567890', config('shop.whatsapp'));
-        $this->assertSame('albaniah.official', config('shop.instagram'));
-        $this->assertSame('albaniah.tiktok', config('shop.tiktok'));
+        $this->assertSame('cheerychic.official', config('shop.instagram'));
+        $this->assertSame('cheerychic.tiktok', config('shop.tiktok'));
         $this->assertSame(['jne', 'sicepat'], config('shop.shipping.couriers'));
         $this->assertTrue(config('shop.shipping.tracking_sync'));
         $this->assertSame(12, config('shop.payment.expiry_hours'));

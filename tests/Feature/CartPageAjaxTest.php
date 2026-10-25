@@ -13,7 +13,7 @@ class CartPageAjaxTest extends TestCase
 
     public function test_json_update_returns_rendered_cart_and_count(): void
     {
-        $product = Product::factory()->create(['name' => 'Mukena Rayon', 'price' => 150000, 'stock' => 10]);
+        $product = Product::factory()->create(['name' => 'Daster Rayon', 'price' => 150000, 'stock' => 10]);
         $this->post(route('cart.store', $product), ['quantity' => 1]);
 
         $response = $this->patchJson(route('cart.update', (string) $product->id), ['quantity' => 3])
@@ -21,7 +21,7 @@ class CartPageAjaxTest extends TestCase
             ->assertJson(['type' => null, 'message' => null, 'count' => 3]);
 
         $html = $response->json('html');
-        $this->assertStringContainsString('Mukena Rayon', $html);
+        $this->assertStringContainsString('Daster Rayon', $html);
         $this->assertStringContainsString('3 item', $html);
         $this->assertStringContainsString('data-cart-line', $html);
         $this->assertStringContainsString('450.000', $html);
@@ -39,18 +39,18 @@ class CartPageAjaxTest extends TestCase
 
     public function test_quantity_zero_and_destroy_remove_line_and_show_empty_state(): void
     {
-        $a = Product::factory()->create(['name' => 'Mukena A', 'stock' => 5]);
-        $b = Product::factory()->create(['name' => 'Mukena B', 'stock' => 5]);
+        $a = Product::factory()->create(['name' => 'Daster A', 'stock' => 5]);
+        $b = Product::factory()->create(['name' => 'Daster B', 'stock' => 5]);
         $this->post(route('cart.store', $a), ['quantity' => 2]);
         $this->post(route('cart.store', $b));
 
         $this->patchJson(route('cart.update', (string) $a->id), ['quantity' => 0])
             ->assertOk()
-            ->assertJson(['type' => 'success', 'message' => 'Mukena A dihapus dari keranjang.', 'count' => 1]);
+            ->assertJson(['type' => 'success', 'message' => 'Daster A dihapus dari keranjang.', 'count' => 1]);
 
         $response = $this->deleteJson(route('cart.destroy', (string) $b->id))
             ->assertOk()
-            ->assertJson(['message' => 'Mukena B dihapus dari keranjang.', 'count' => 0]);
+            ->assertJson(['message' => 'Daster B dihapus dari keranjang.', 'count' => 0]);
 
         $this->assertStringContainsString('Keranjangmu masih kosong', $response->json('html'));
     }

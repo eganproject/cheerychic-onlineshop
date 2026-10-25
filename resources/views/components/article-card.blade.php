@@ -6,8 +6,8 @@
             <img src="{{ $article->coverUrl() }}" alt="" @unless ($eager) loading="lazy" @endunless decoding="async"
                  class="size-full object-cover transition duration-700 group-hover:scale-[1.03]">
         @else
-            <div class="ornament-bg relative grid size-full place-items-center overflow-hidden bg-ink">
-                <x-logo variant="mark" class="relative h-10" aria-hidden="true" />
+            <div class="ornament-bg-light relative grid size-full place-items-center overflow-hidden bg-blush-100">
+                <x-logo variant="mark" class="relative h-14" aria-hidden="true" />
             </div>
         @endif
     </div>

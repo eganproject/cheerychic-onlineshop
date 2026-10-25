@@ -128,16 +128,16 @@ class IntegrationSettingsTest extends TestCase
         $this->get(route('login'))->assertDontSee('Lanjutkan dengan Google');
 
         $this->actingAs($this->superadmin)->put(route('admin.integrations.update', 'firebase'), ['firebase' => [
-            'login_enabled' => '1', 'api_key' => 'AIzaTest', 'project_id' => 'albaniah-shop', 'auth_domain' => '', 'app_id' => '1:1:web:1',
+            'login_enabled' => '1', 'api_key' => 'AIzaTest', 'project_id' => 'cheerychic-shop', 'auth_domain' => '', 'app_id' => '1:1:web:1',
         ]])->assertSessionHasNoErrors();
 
         $this->assertTrue(config('services.firebase.enabled'));
-        $this->assertSame('albaniah-shop.firebaseapp.com', config('services.firebase.auth_domain'));
+        $this->assertSame('cheerychic-shop.firebaseapp.com', config('services.firebase.auth_domain'));
         auth()->logout();
         $this->get(route('login'))->assertSee('Lanjutkan dengan Google');
 
         $this->actingAs($this->superadmin)->put(route('admin.integrations.update', 'firebase'), ['firebase' => [
-            'login_enabled' => '0', 'api_key' => 'AIzaTest', 'project_id' => 'albaniah-shop',
+            'login_enabled' => '0', 'api_key' => 'AIzaTest', 'project_id' => 'cheerychic-shop',
         ]])->assertSessionHasNoErrors();
         $this->assertFalse(config('services.firebase.enabled'));
 
@@ -152,14 +152,14 @@ class IntegrationSettingsTest extends TestCase
             'services.midtrans.client_key' => 'SB-Mid-client-OK',
             'services.rajaongkir.api_key' => 'bad-key',
             'services.firebase.api_key' => 'AIzaTest',
-            'services.firebase.project_id' => 'albaniah-shop',
-            'app.url' => 'https://albaniah.test',
+            'services.firebase.project_id' => 'cheerychic-shop',
+            'app.url' => 'https://cheerychic.test',
         ]);
 
         Http::fake([
             'api.sandbox.midtrans.com/*' => Http::response(['status_code' => '404', 'status_message' => "Transaction doesn't exist."], 404),
             'rajaongkir.komerce.id/*' => Http::response(['meta' => ['message' => 'Invalid Api key, key not found', 'code' => 401]], 401),
-            'identitytoolkit.googleapis.com/*' => Http::response(['projectId' => 'albaniah-shop', 'authorizedDomains' => ['localhost', 'albaniah-shop.firebaseapp.com']]),
+            'identitytoolkit.googleapis.com/*' => Http::response(['projectId' => 'cheerychic-shop', 'authorizedDomains' => ['localhost', 'cheerychic-shop.firebaseapp.com']]),
         ]);
 
         $this->actingAs($this->superadmin)->post(route('admin.integrations.test', 'midtrans'))
@@ -174,14 +174,14 @@ class IntegrationSettingsTest extends TestCase
         $this->followingRedirects()->post(route('admin.integrations.test', 'firebase'))
             ->assertOk()
             ->assertSee('Koneksi berhasil')
-            ->assertSee('albaniah.test belum ada di Authentication');
+            ->assertSee('cheerychic.test belum ada di Authentication');
 
         $this->assertSame(3, ActivityLog::where('action', 'integrations.test')->count());
     }
 
     public function test_firebase_test_explains_disabled_authentication(): void
     {
-        config(['services.firebase.api_key' => 'AIzaTest', 'services.firebase.project_id' => 'albaniah-shop']);
+        config(['services.firebase.api_key' => 'AIzaTest', 'services.firebase.project_id' => 'cheerychic-shop']);
 
         Http::fake([
             'identitytoolkit.googleapis.com/*' => Http::response(['error' => ['code' => 400, 'message' => 'CONFIGURATION_NOT_FOUND']], 400),
@@ -194,10 +194,10 @@ class IntegrationSettingsTest extends TestCase
 
     public function test_firebase_test_accepts_numeric_project_number(): void
     {
-        config(['services.firebase.api_key' => 'AIzaTest', 'services.firebase.project_id' => 'albaniah-shop', 'app.url' => 'https://albaniah.test']);
+        config(['services.firebase.api_key' => 'AIzaTest', 'services.firebase.project_id' => 'cheerychic-shop', 'app.url' => 'https://cheerychic.test']);
 
         Http::fake([
-            'identitytoolkit.googleapis.com/*' => Http::response(['projectId' => '547048298727', 'authorizedDomains' => ['albaniah.test']]),
+            'identitytoolkit.googleapis.com/*' => Http::response(['projectId' => '547048298727', 'authorizedDomains' => ['cheerychic.test']]),
         ]);
 
         $this->actingAs($this->superadmin)->post(route('admin.integrations.test', 'firebase'))

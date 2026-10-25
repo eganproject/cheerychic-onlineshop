@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy ulang Albaniah Online Shop di VPS (jalankan dari folder aplikasi):
+# Deploy ulang Cheery Chic Online Shop di VPS (jalankan dari folder aplikasi):
 #   bash deploy/deploy.sh
 # Asumsi: kode diambil dari git, Node.js tersedia untuk build aset.
 set -euo pipefail

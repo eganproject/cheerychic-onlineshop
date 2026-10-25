@@ -22,15 +22,15 @@
                 </div>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <x-form.input name="name" label="Nama singkat" :value="$values['name']" required maxlength="30"
-                        tip="Nama pendek toko di teks sehari-hari, mis. “Kenapa Albaniah”, sapaan email, dan pesan WhatsApp."
+                        tip="Nama pendek toko di teks sehari-hari, mis. “Kenapa Cheery Chic”, sapaan email, dan pesan WhatsApp."
                         :tips="['Cukup 1–2 kata, sama dengan nama yang dikenal pelanggan.']" />
                     <x-form.input name="full_name" label="Nama lengkap" :value="$values['full_name']" required maxlength="80"
                         tip="Nama resmi toko di judul tab browser, hasil Google, invoice, footer, dan pratinjau link."
-                        :tips="['Gabungkan nama + jenis produk, mis. “Albaniah Mukena”, supaya mudah dikenali di Google.']" />
+                        :tips="['Gabungkan nama + jenis produk, mis. “Cheery Chic Daster”, supaya mudah dikenali di Google.']" />
                 </div>
                 <x-form.input name="tagline" label="Tagline" :value="$values['tagline']" maxlength="160" optional
                     tip="Slogan singkat di footer dan judul tab beranda (setelah nama toko), juga dipakai di deskripsi bawaan produk tanpa deskripsi."
-                    :tips="['Pendek & khas, mis. “Temani Ibadahmu”. Di bawah ±60 huruf.']" />
+                    :tips="['Pendek & khas, mis. “Cantik di Rumah, Ceria Setiap Hari”. Di bawah ±60 huruf.']" />
                 <x-form.textarea name="address" label="Alamat gudang / pengirim" :value="$values['address']" rows="3" maxlength="500" optional
                                  placeholder="Jl. ..., Kecamatan, Kota, Kode pos"
                                  :hint="trim('Dicetak di invoice dan packing slip. '.$envHint('address'))"
@@ -51,7 +51,7 @@
                     <x-form.input type="email" name="email" label="Email kontak" icon="envelope" :value="$values['email']" placeholder="halo@tokoanda.com" optional
                         tip="Email yang ditampilkan di footer toko supaya pelanggan bisa menghubungi Anda. Bukan email login admin." />
                     <x-form.input name="instagram" label="Instagram" prefix="@" :value="$values['instagram']" placeholder="username" optional
-                        tip="Cukup username tanpa @ dan tanpa link, mis. albaniah.official. Tautannya dibuat otomatis di footer." />
+                        tip="Cukup username tanpa @ dan tanpa link, mis. cheerychic.id. Tautannya dibuat otomatis di footer." />
                     <x-form.input name="tiktok" label="TikTok" prefix="@" :value="$values['tiktok']" placeholder="username" optional
                         tip="Cukup username tanpa @, tautannya dibuat otomatis di footer." />
                     <x-form.input type="url" name="facebook" label="Halaman Facebook" icon="external" :value="$values['facebook']" placeholder="https://facebook.com/namatoko" optional wrapper-class="sm:col-span-2" />

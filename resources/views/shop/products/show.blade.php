@@ -282,7 +282,7 @@
                                         <div class="rounded-2xl bg-sand-50 p-5"><x-icon name="credit-card" class="size-6 text-brand-600" /><p class="mt-3 font-semibold text-ink">Pembayaran</p><p class="mt-1 text-sm">Bayar dengan transfer bank, e-wallet, atau QRIS. Pesanan diproses setelah pembayaran terkonfirmasi.</p></div>
                                     </div>
                                 @else
-                                    <div class="max-w-3xl rounded-2xl bg-sand-50 p-5"><x-icon name="refresh" class="size-6 text-brand-600" /><p class="mt-3 text-sm">Produk resmi Albaniah. Produk cacat produksi bisa ditukar dalam 7 hari setelah diterima, cukup hubungi CS kami dengan menyertakan nomor pesanan.</p></div>
+                                    <div class="max-w-3xl rounded-2xl bg-sand-50 p-5"><x-icon name="refresh" class="size-6 text-brand-600" /><p class="mt-3 text-sm">Produk resmi Cheery Chic. Produk cacat produksi bisa ditukar dalam 7 hari setelah diterima, cukup hubungi CS kami dengan menyertakan nomor pesanan.</p></div>
                                 @endif
                             </div>
                         @endforeach
@@ -292,9 +292,9 @@
                 <aside class="rounded-2xl border border-stone-200 p-6 lg:col-span-4 lg:self-start lg:p-7">
                     <span class="grid size-11 place-items-center rounded-full bg-sand-100 text-ink"><x-category-icon :for="$sportFor" class="size-[22px]" /></span>
                     <p class="mt-5 text-lg font-semibold tracking-tight text-ink">Bingung pilih ukuran atau bahan?</p>
-                    <p class="mt-1.5 text-sm text-stone-500">Tim Albaniah siap bantu memilih mukena yang pas untukmu.</p>
+                    <p class="mt-1.5 text-sm text-stone-500">Tim Cheery Chic siap bantu memilih motif dan ukuran yang pas untukmu.</p>
                     @if (config('shop.whatsapp'))
-                        <a href="https://wa.me/{{ config('shop.whatsapp') }}?text={{ urlencode('Halo Albaniah, saya mau tanya tentang '.$product->name) }}" target="_blank" rel="noopener" class="btn btn-outline btn-pill mt-5"><x-icon name="chat" class="size-4" /> Chat WhatsApp</a>
+                        <a href="https://wa.me/{{ config('shop.whatsapp') }}?text={{ urlencode('Halo Cheery Chic, saya mau tanya tentang '.$product->name) }}" target="_blank" rel="noopener" class="btn btn-outline btn-pill mt-5"><x-icon name="chat" class="size-4" /> Chat WhatsApp</a>
                     @else
                         <a href="{{ route('articles.index') }}" class="btn btn-outline btn-pill mt-5">Baca tips & inspirasi <x-icon name="arrow-right" class="size-4" /></a>
                     @endif

@@ -29,6 +29,9 @@ class HomeController extends Controller
             'activitiesKind' => $activities['kind'],
             'banners' => $on('banners') ? Banner::visible()->take(8)->get() : new Collection,
             'bestSellers' => $on('best_sellers') ? $bestSellers->forHome() : new Collection,
+            'lookbook' => $on('lookbook')
+                ? Product::active()->with(['images', 'activeVariants'])->has('images')->orderByDesc('is_featured')->latest()->take(6)->get()
+                : new Collection,
             'onSale' => $on('promo') ? Product::active()->with('category')->onSale()->latest()->take(4)->get() : new Collection,
             'latestArticles' => $on('articles')
                 ? Article::published()->with('category:id,name,slug')->latest('published_at')->take(3)->get()

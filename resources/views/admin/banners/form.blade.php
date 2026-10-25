@@ -29,9 +29,9 @@
                     <div class="label-row">
                         <label for="title" class="label">Judul</label>
                         <x-tip title="Judul" text="Teks besar di atas gambar (bila “Tampilkan teks” aktif). Selalu dipakai sebagai teks alternatif gambar untuk Google & pembaca layar."
-                            :tips="['Singkat dan jelas promonya: 3–6 kata, mis. “Diskon 20% Mukena Renda”.']" />
+                            :tips="['Singkat dan jelas promonya: 3–6 kata, mis. “Diskon 20% Daster Rayon”.']" />
                     </div>
-                    <input id="title" name="title" value="{{ old('title', $banner->title) }}" required maxlength="120" placeholder="Diskon 10% mukena renda" class="input @error('title') input-error @enderror">
+                    <input id="title" name="title" value="{{ old('title', $banner->title) }}" required maxlength="120" placeholder="Diskon 10% daster rayon" class="input @error('title') input-error @enderror">
                     <p class="mt-1.5 text-xs text-stone-400">Juga dipakai sebagai teks alternatif gambar.</p>
                     <x-input-error for="title" />
                 </div>
@@ -48,7 +48,7 @@
                         <div class="label-row">
                             <label for="link_url" class="label">Link <span class="font-normal text-stone-400">(opsional)</span></label>
                             <x-tip title="Link" text="Halaman yang dibuka saat banner diklik. Kosongkan bila banner hanya informasi."
-                                :tips="['Halaman toko: awali dengan /, mis. /produk?promo=1 atau /produk?kategori=mukena-dewasa.', 'Link luar: tulis lengkap dengan https:// (dibuka di tab baru).']" />
+                                :tips="['Halaman toko: awali dengan /, mis. /produk?promo=1 atau /produk?kategori=daster-dress.', 'Link luar: tulis lengkap dengan https:// (dibuka di tab baru).']" />
                         </div>
                         <input id="link_url" name="link_url" value="{{ old('link_url', $banner->link_url) }}" maxlength="500" placeholder="/produk?promo=1" class="input @error('link_url') input-error @enderror">
                         <x-input-error for="link_url" />

@@ -40,6 +40,6 @@ class RegisteredUserController extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended(route('account.dashboard'))
-            ->with('success', 'Selamat datang di Albaniah, '.$user->name.'!');
+            ->with('success', 'Selamat datang di Cheery Chic, '.$user->name.'!');
     }
 }

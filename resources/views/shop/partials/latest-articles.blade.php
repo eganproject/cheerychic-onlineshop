@@ -2,7 +2,7 @@
 @if ($latestArticles->isNotEmpty())
     <section class="shop-container section-gap" aria-labelledby="artikel-terbaru">
         <div class="section-head">
-            <span class="ornament-mark" aria-hidden="true"><span class="size-1.5 rotate-45 bg-current"></span></span>
+            <span class="ornament-mark" aria-hidden="true"><span class="flower-dot"></span></span>
             <p class="eyebrow mt-3 text-brand-700">Tips &amp; panduan</p>
             <h2 id="artikel-terbaru" class="section-title">{{ \App\Support\Storefront::text('articles_title', 'Artikel terbaru') }}</h2>
             <a href="{{ route('articles.index') }}" class="link-arrow mt-3">Semua artikel <x-icon name="arrow-right" class="size-4" /></a>

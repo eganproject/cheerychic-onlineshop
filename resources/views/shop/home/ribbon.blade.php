@@ -1,13 +1,19 @@
-{{-- Pita slogan: deret nilai Albaniah di pita navy (teks diatur di Admin › Tampilan Beranda, dipisah "•") --}}
+{{-- Pita berjalan: keunggulan Cheery Chic di pita emas (teks diatur di Admin › Tampilan Beranda, dipisah "•") --}}
 @php($words = \App\Support\Storefront::ribbonWords())
 @if ($words)
-    <section @class(['bg-ink text-white', 'section-gap' => ! $first]) aria-label="{{ implode(', ', $words) }}">
-        <ul class="shop-container flex flex-wrap items-center justify-center gap-x-6 gap-y-3 py-5 sm:gap-x-10 sm:py-6">
-            @foreach ($words as $word)
-                <li class="flex items-center gap-3 font-logo text-[11px] font-medium tracking-[0.26em] whitespace-nowrap uppercase sm:text-[13px]">
-                    <span class="size-1.5 shrink-0 rotate-45 bg-brand-400" aria-hidden="true"></span>{{ $word }}
-                </li>
+    <section @class(['overflow-hidden py-3', 'section-gap' => ! $first]) aria-label="{{ implode(', ', $words) }}">
+        <div class="-mx-4 -rotate-1 overflow-hidden bg-brand-400 text-ink shadow-sm">
+        <div class="flex w-max py-3.5 motion-safe:animate-marquee motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:justify-center sm:py-4">
+            @foreach ([1, 2] as $copy)
+                <ul class="flex shrink-0 items-center" @if ($copy === 2) aria-hidden="true" @endif>
+                    @foreach ($words as $word)
+                        <li class="flex items-center gap-4 px-4 font-display text-lg font-semibold whitespace-nowrap italic sm:gap-6 sm:px-6 sm:text-2xl">
+                            <span class="flower-dot size-4 text-white sm:size-5" aria-hidden="true"></span>{{ $word }}
+                        </li>
+                    @endforeach
+                </ul>
             @endforeach
-        </ul>
+        </div>
+        </div>
     </section>
 @endif

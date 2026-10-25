@@ -1,22 +1,22 @@
 @import 'tailwindcss';
 
 /*
- * Font Albaniah (di-host sendiri lewat @fontsource, tanpa CDN):
- *   Cinzel             = huruf kapital ala logo "ALBANIAH" (logo & label kecil)
- *   Cormorant Garamond = judul serif yang anggun (.display, .section-title)
- *   Jost               = teks isi, mirip tagline "TEMANI IBADAHMU"
+ * Font Cheery Chic (di-host sendiri lewat @fontsource, tanpa CDN):
+ *   Playfair Display = serif kontras tinggi ala tulisan "CheeryChic" di logo
+ *                      (judul .display/.section-title, aksen miring <em>)
+ *   Plus Jakarta Sans = teks isi yang bersih, ramah, dan mudah dibaca di HP
  */
-@import '@fontsource/cinzel/latin-500.css';
-@import '@fontsource/cinzel/latin-600.css';
-@import '@fontsource/cormorant-garamond/latin-500.css';
-@import '@fontsource/cormorant-garamond/latin-600.css';
-@import '@fontsource/cormorant-garamond/latin-700.css';
-@import '@fontsource/cormorant-garamond/latin-500-italic.css';
-@import '@fontsource/cormorant-garamond/latin-600-italic.css';
-@import '@fontsource/jost/latin-400.css';
-@import '@fontsource/jost/latin-500.css';
-@import '@fontsource/jost/latin-600.css';
-@import '@fontsource/jost/latin-700.css';
+@import '@fontsource/playfair-display/latin-500.css';
+@import '@fontsource/playfair-display/latin-600.css';
+@import '@fontsource/playfair-display/latin-700.css';
+@import '@fontsource/playfair-display/latin-500-italic.css';
+@import '@fontsource/playfair-display/latin-600-italic.css';
+@import '@fontsource/playfair-display/latin-700-italic.css';
+@import '@fontsource/plus-jakarta-sans/latin-400.css';
+@import '@fontsource/plus-jakarta-sans/latin-500.css';
+@import '@fontsource/plus-jakarta-sans/latin-600.css';
+@import '@fontsource/plus-jakarta-sans/latin-700.css';
+@import '@fontsource/plus-jakarta-sans/latin-800.css';
 @plugin '@tailwindcss/forms';
 
 /* Library form (di-host sendiri lewat npm), ditimpa gaya brand di bawah. */
@@ -29,66 +29,96 @@
 @source '../../app';
 
 /*
- * Sistem warna Albaniah (dari logo): tenang, hangat, anggun.
- *   ink    = navy tua tulisan "ALBANIAH" #0F1F2C -> teks utama, tombol utama, footer
- *   sand   = krem/gading lembut (latar logo) -> permukaan, latar foto produk
- *   brand  = rose gold / champagne bunga logo (brand-400 #CDA083) -> aksen hemat:
- *            garis aktif, tombol beli `.btn-brand`, ornamen. Teks rose gold di
- *            latar putih pakai brand-600/700 supaya terbaca.
- *   accent = merah mawar lembut -> HANYA label diskon / hemat.
+ * Sistem warna Cheery Chic (dari logo monogram emas "CC"): hangat, ceria, rumahan.
+ *   ink    = cokelat kakao tua #33241C -> teks utama, tombol utama, footer
+ *   sand   = krem susu (latar halaman, latar foto produk)
+ *   brand  = emas logo (brand-400 #D6AE32) -> aksen: tombol beli `.btn-brand`,
+ *            garis aktif, ornamen, angka peringkat. Teks emas di latar putih pakai
+ *            brand-600/700 supaya terbaca.
+ *   blush  = merah muda lembut ala kain daster motif bunga -> latar seksi ceria,
+ *            label "Baru", sorotan kecil
+ *   sage   = hijau daun pelengkap motif bunga (hemat: ikon, titik dekor)
+ *   accent = koral/merah -> HANYA label diskon / hemat & link Promo.
  *   stone  = abu hangat (bawaan Tailwind).
  * Ganti nilai di sini untuk rebranding tanpa menyentuh view.
  */
 @theme {
-    --font-sans: 'Jost', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-    --font-display: 'Cormorant Garamond', ui-serif, Georgia, serif;
-    --font-logo: 'Cinzel', 'Cormorant Garamond', ui-serif, Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    --font-display: 'Playfair Display', ui-serif, Georgia, serif;
+    --font-logo: 'Playfair Display', ui-serif, Georgia, serif;
 
-    --color-brand-50: #fbf6f1;
-    --color-brand-100: #f5eadf;
-    --color-brand-200: #ebd6c3;
-    --color-brand-300: #debda2;
-    --color-brand-400: #cda083;
-    --color-brand-500: #b9876a;
-    --color-brand-600: #9c6b4f;
-    --color-brand-700: #82573f;
-    --color-brand-800: #6a4735;
-    --color-brand-900: #573b2d;
-    --color-brand-950: #2f1f17;
+    --color-brand-50: #fdf9ec;
+    --color-brand-100: #faf0cf;
+    --color-brand-200: #f3df9c;
+    --color-brand-300: #ebcb66;
+    --color-brand-400: #d6ae32;
+    --color-brand-500: #bf9625;
+    --color-brand-600: #8f6f17;
+    --color-brand-700: #75590f;
+    --color-brand-800: #5f4810;
+    --color-brand-900: #4e3b11;
+    --color-brand-950: #2b2007;
 
-    --color-accent-50: #fdf2f3;
-    --color-accent-100: #fbe3e6;
-    --color-accent-200: #f6cad0;
-    --color-accent-300: #eea2ad;
-    --color-accent-400: #e07383;
-    --color-accent-500: #cc5065;
-    --color-accent-600: #b23a51;
-    --color-accent-700: #942e43;
-    --color-accent-800: #7c293b;
-    --color-accent-900: #6a2637;
+    --color-accent-50: #fff3f1;
+    --color-accent-100: #ffe3df;
+    --color-accent-200: #ffcbc4;
+    --color-accent-300: #fca598;
+    --color-accent-400: #f57766;
+    --color-accent-500: #e4503c;
+    --color-accent-600: #cc3826;
+    --color-accent-700: #aa2c1d;
+    --color-accent-800: #8c281c;
+    --color-accent-900: #74261d;
 
-    /* Nama lama (tema sebelumnya), dipetakan ke champagne muda. Jangan dipakai lagi. */
-    --color-volt: #ebd6c3;
-    --color-volt-dark: #debda2;
+    --color-blush-50: #fff6f4;
+    --color-blush-100: #fde9e5;
+    --color-blush-200: #fbd6cf;
+    --color-blush-300: #f6b8ac;
+    --color-blush-400: #ee9282;
+    --color-blush-500: #e06c5c;
+    --color-blush-600: #c4503f;
+    --color-blush-700: #a03f31;
 
-    --color-cream: #fbf8f2;
-    --color-ink: #0f1f2c;
-    --color-navy-50: #f2f5f8;
-    --color-navy-100: #e1e8ee;
-    --color-navy-700: #263b4d;
-    --color-navy-800: #1a2c3b;
-    --color-navy-900: #0f1f2c;
-    --color-sand-50: #fcfaf6;
-    --color-sand-100: #f7f2ea;
-    --color-sand-200: #efe7da;
-    --color-sand-300: #e2d6c3;
+    --color-sage-50: #f3f7ef;
+    --color-sage-100: #e3eddb;
+    --color-sage-200: #c9dbbb;
+    --color-sage-300: #a7c393;
+    --color-sage-400: #86a870;
+    --color-sage-500: #6a8c56;
+    --color-sage-600: #557243;
+
+    /* Nama lama (tema sebelumnya), dipetakan ke emas muda. Jangan dipakai lagi. */
+    --color-volt: #f3df9c;
+    --color-volt-dark: #ebcb66;
+
+    --color-cream: #fffaf3;
+    --color-ink: #33241c;
+    --color-navy-50: #f8f4f1;
+    --color-navy-100: #ece3dd;
+    --color-navy-700: #5a4336;
+    --color-navy-800: #45332a;
+    --color-navy-900: #33241c;
+    --color-sand-50: #fffcf7;
+    --color-sand-100: #fdf6ec;
+    --color-sand-200: #f8ecdc;
+    --color-sand-300: #efdcc4;
 
     --animate-marquee: marquee 40s linear infinite;
+    --animate-sway: sway 6s ease-in-out infinite;
 
     @keyframes marquee {
         from { transform: translateX(0); }
         to { transform: translateX(-50%); }
     }
+    @keyframes sway {
+        0%, 100% { transform: rotate(-2deg); }
+        50% { transform: rotate(2deg); }
+    }
+}
+
+/* Bunga 5 kelopak (ikon kecil motif daster), dipakai lewat mask. */
+:root {
+    --flower-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='black'%3E%3Ccircle cx='12' cy='6' r='4.4'/%3E%3Ccircle cx='17.7' cy='10.1' r='4.4'/%3E%3Ccircle cx='15.5' cy='16.9' r='4.4'/%3E%3Ccircle cx='8.5' cy='16.9' r='4.4'/%3E%3Ccircle cx='6.3' cy='10.1' r='4.4'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 [x-cloak] {
@@ -147,7 +177,7 @@
         @apply mb-0;
     }
 
-    /* Tooltip info (<x-tip>): panel navy, teks krem, aksen rose gold. */
+    /* Tooltip info (<x-tip>): panel kakao, teks krem, aksen emas. */
     .tip-panel {
         @apply fixed z-[90] w-max max-w-[min(20rem,calc(100vw-1.5rem))] rounded-xl bg-ink px-4 py-3 text-left text-[13px] leading-relaxed font-normal tracking-normal text-cream/90 normal-case shadow-xl shadow-ink/25 ring-1 ring-brand-400/30;
     }
@@ -242,31 +272,36 @@
     }
 
     /*
-     * Tipografi. .display = judul besar: serif Cormorant yang anggun.
-     * .display-caps = huruf kapital Cinzel berjarak lebar ala logo, untuk aksen kecil.
+     * Tipografi. .display = judul besar: serif Playfair Display (senada tulisan logo).
+     * Bungkus kata penekanan dengan <em> supaya jadi miring emas, mis. "Daster <em>ceria</em>".
+     * .display-caps = huruf kapital berjarak lebar untuk aksen kecil.
      */
     .display {
-        @apply font-display font-semibold tracking-[-0.01em] text-balance;
+        @apply font-display font-semibold tracking-[-0.015em] text-balance;
+    }
+    .display em,
+    .section-title em {
+        @apply font-semibold text-brand-500 italic;
     }
     .display-caps,
     .display-sport {
-        @apply font-logo font-semibold tracking-[0.18em] uppercase;
+        @apply font-sans font-bold tracking-[0.2em] uppercase;
     }
     .eyebrow {
-        @apply text-[11px] font-medium tracking-[0.2em] uppercase;
+        @apply text-[11px] font-semibold tracking-[0.18em] uppercase;
     }
-    /* Label seksi: ornamen belah ketupat rose gold + garis tipis + teks kecil kapital. */
+    /* Label seksi: bunga kecil emas + teks kecil kapital. */
     .kicker {
-        @apply inline-flex items-center gap-2.5 text-[11px] font-medium tracking-[0.24em] text-stone-500 uppercase;
+        @apply inline-flex items-center gap-2.5 text-[11px] font-semibold tracking-[0.2em] text-stone-500 uppercase;
     }
     .kicker::before {
-        @apply size-[7px] shrink-0 rotate-45 bg-brand-400 content-[''];
-        box-shadow: 10px -10px 0 -2.5px var(--color-brand-300);
+        @apply size-3 shrink-0 bg-brand-400 content-[''];
+        mask: var(--flower-mask) center / contain no-repeat;
     }
     .section-title {
-        @apply font-display font-semibold tracking-[-0.01em] text-balance mt-2 text-[2rem] leading-[1.05] text-ink sm:text-[2.6rem] lg:text-[3.25rem];
+        @apply font-display font-semibold tracking-[-0.015em] text-balance mt-2 text-[2rem] leading-[1.08] text-ink sm:text-[2.6rem] lg:text-[3.1rem];
     }
-    /* Pemisah ornamen kecil (garis - belah ketupat - garis). */
+    /* Pemisah ornamen kecil (garis - bunga - garis). */
     .ornament-divider {
         @apply flex items-center gap-3 text-brand-400;
     }
@@ -282,11 +317,14 @@
         @apply rounded-full px-6 py-3;
     }
     .btn-ink {
-        @apply bg-ink text-white hover:bg-stone-800 focus-visible:outline-ink;
+        @apply bg-ink text-white hover:bg-navy-800 focus-visible:outline-ink;
     }
-    /* Tombol rose gold khas Albaniah (teks navy supaya kontras). Pakai hemat: aksi utama. */
+    /* Tombol emas khas Cheery Chic (teks kakao supaya kontras). Pakai untuk aksi utama/beli. */
     .btn-brand {
-        @apply bg-brand-400 text-ink hover:bg-brand-300 focus-visible:outline-brand-500;
+        @apply bg-brand-400 text-ink shadow-sm shadow-brand-600/20 hover:bg-brand-300 focus-visible:outline-brand-500;
+    }
+    .btn-blush {
+        @apply bg-blush-100 text-blush-700 hover:bg-blush-200 focus-visible:outline-blush-400;
     }
     .btn-outline {
         @apply bg-transparent text-ink ring-1 ring-stone-300 ring-inset hover:ring-ink focus-visible:outline-ink;
@@ -307,7 +345,7 @@
         @apply inline-flex items-center gap-1.5 text-sm font-semibold text-ink transition hover:text-brand-700;
     }
     .chip {
-        @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:text-ink max-lg:min-h-11;
+        @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-brand-400 hover:text-ink max-lg:min-h-11;
     }
     .chip-active {
         @apply border-ink bg-ink text-white hover:border-ink hover:text-white;
@@ -321,13 +359,13 @@
     }
     /* Panel/kotak bagian di halaman pelanggan (checkout, akun). */
     .panel {
-        @apply rounded-2xl border border-stone-200/80 bg-white;
+        @apply rounded-3xl border border-stone-200/80 bg-white;
     }
     .panel-title {
-        @apply flex items-center gap-2 text-base font-semibold tracking-tight text-ink;
+        @apply flex items-center gap-2 text-base font-bold tracking-tight text-ink;
     }
     .tag {
-        @apply inline-flex items-center rounded-md px-2 py-1 text-[10px] leading-none font-semibold tracking-[0.08em] uppercase;
+        @apply inline-flex items-center rounded-full px-2.5 py-1 text-[10px] leading-none font-bold tracking-[0.06em] uppercase;
     }
     .no-scrollbar {
         scrollbar-width: none;
@@ -335,29 +373,53 @@
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }
-    /* Motif lengkung mihrab tipis (latar dekoratif gelap), terinspirasi kelopak logo. */
+
+    /*
+     * Motif kain daster (latar dekoratif), bisa diulang tanpa sambungan:
+     *   .ornament-bg       = bunga emas kecil di latar gelap (footer, pita "Kenapa")
+     *   .ornament-bg-light = bunga daisy & titik di latar krem/blush (hero, promo)
+     *   .print-polka       = polkadot emas halus
+     */
     .ornament-bg {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='96' viewBox='0 0 72 96'%3E%3Cpath d='M8 96V44a28 28 0 0 1 56 0v52' fill='none' stroke='%23ffffff' stroke-opacity='.06'/%3E%3Cpath d='M36 4l4 4-4 4-4-4z' fill='%23cda083' fill-opacity='.18'/%3E%3C/svg%3E");
-        background-size: 72px 96px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='%23d6ae32' fill-opacity='.14'%3E%3Ccircle cx='24' cy='18' r='5'/%3E%3Ccircle cx='31' cy='25' r='5'/%3E%3Ccircle cx='24' cy='32' r='5'/%3E%3Ccircle cx='17' cy='25' r='5'/%3E%3C/g%3E%3Ccircle cx='24' cy='25' r='3' fill='%23fbd6cf' fill-opacity='.18'/%3E%3Ccircle cx='72' cy='72' r='3' fill='%23d6ae32' fill-opacity='.16'/%3E%3Ccircle cx='76' cy='22' r='1.6' fill='%23ffffff' fill-opacity='.12'/%3E%3Ccircle cx='20' cy='76' r='1.6' fill='%23ffffff' fill-opacity='.12'/%3E%3C/svg%3E");
+        background-size: 96px 96px;
     }
-    /* Motif yang sama untuk latar terang (krem). */
     .ornament-bg-light {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='96' viewBox='0 0 72 96'%3E%3Cpath d='M8 96V44a28 28 0 0 1 56 0v52' fill='none' stroke='%23b9876a' stroke-opacity='.12'/%3E%3Cpath d='M36 4l4 4-4 4-4-4z' fill='%23cda083' fill-opacity='.3'/%3E%3C/svg%3E");
-        background-size: 72px 96px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='%23ffffff' fill-opacity='.9'%3E%3Ccircle cx='24' cy='18' r='5.5'/%3E%3Ccircle cx='31' cy='25' r='5.5'/%3E%3Ccircle cx='24' cy='32' r='5.5'/%3E%3Ccircle cx='17' cy='25' r='5.5'/%3E%3C/g%3E%3Ccircle cx='24' cy='25' r='3.2' fill='%23d6ae32' fill-opacity='.55'/%3E%3Ccircle cx='72' cy='70' r='3' fill='%23ee9282' fill-opacity='.35'/%3E%3Ccircle cx='76' cy='24' r='2' fill='%23d6ae32' fill-opacity='.3'/%3E%3Ccircle cx='22' cy='76' r='2' fill='%23a7c393' fill-opacity='.45'/%3E%3C/svg%3E");
+        background-size: 96px 96px;
+    }
+    .print-polka {
+        background-image: radial-gradient(color-mix(in srgb, var(--color-brand-400) 22%, transparent) 2px, transparent 2.5px);
+        background-size: 22px 22px;
     }
 
     /*
-     * Bingkai lengkung mihrab, ciri visual Albaniah.
-     *   .arch      = puncak setengah lingkaran penuh (hero, ubin koleksi)
-     *   .arch-soft = kubah landai untuk foto produk (sudut atas foto tidak banyak terpotong)
+     * Bentuk khas Cheery Chic:
+     *   .arch      = "daun" lembut (dua sudut membulat besar), untuk hero & ubin koleksi
+     *   .arch-soft = sudut membulat besar untuk foto produk
+     *   .scallop / .scallop-up = tepi renda bergelombang ala rempel/kelim daster.
+     *       Pasang sebagai elemen tipis berwarna `text-*` (warna = warna gelombang),
+     *       mis. <div class="scallop text-sand-100"></div> di bawah seksi berlatar sand-100.
      */
     .arch {
-        border-radius: 999px 999px 1.5rem 1.5rem;
+        border-radius: 7rem 1.75rem 7rem 1.75rem;
     }
     .arch-soft {
-        border-radius: 50% 50% 1.25rem 1.25rem / 20% 20% 1.25rem 1.25rem;
+        border-radius: 1.75rem 0.875rem 1.75rem 0.875rem;
     }
-    /* Judul seksi rata tengah dengan ornamen belah ketupat di atasnya. */
+    .scallop,
+    .scallop-up {
+        @apply pointer-events-none block h-3.5 w-full;
+        background-image: radial-gradient(circle at 50% 0, currentColor 13px, transparent 13.5px);
+        background-size: 28px 14px;
+        background-repeat: repeat-x;
+        background-position: center top;
+    }
+    .scallop-up {
+        background-image: radial-gradient(circle at 50% 100%, currentColor 13px, transparent 13.5px);
+        background-position: center bottom;
+    }
+    /* Judul seksi rata tengah dengan bunga kecil di atasnya. */
     .section-head {
         @apply mx-auto flex max-w-2xl flex-col items-center text-center;
     }
@@ -367,6 +429,15 @@
     .ornament-mark::before,
     .ornament-mark::after {
         @apply h-px w-8 bg-current opacity-60 content-[''];
+    }
+    /* Monogram CC satu warna (warna = bg-*), ringan untuk placeholder foto yang berulang. */
+    .logo-mask {
+        @apply block;
+        mask: url('/images/brand/cheerychic-mark.svg') center / contain no-repeat;
+    }
+    .flower-dot {
+        @apply inline-block size-3.5 shrink-0 bg-current;
+        mask: var(--flower-mask) center / contain no-repeat;
     }
 
     .table-base {

@@ -12,10 +12,10 @@ class BrandingTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_storefront_uses_albaniah_branding(): void
+    public function test_storefront_uses_cheerychic_branding(): void
     {
         $this->get(route('home'))->assertOk()
-            ->assertSee('<title>Albaniah Mukena', false)
+            ->assertSee('<title>Cheery Chic', false)
             ->assertSee(config('shop.motto'))
             ->assertSee(config('shop.hashtag'))
             ->assertDontSee('MGA')

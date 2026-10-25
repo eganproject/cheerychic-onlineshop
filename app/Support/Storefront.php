@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 /**
@@ -50,12 +51,13 @@ class Storefront
         'activities' => 'Belanja per koleksi',
         'banners' => 'Banner promo',
         'promo' => 'Panel diskon',
-        'why' => 'Kenapa Albaniah',
+        'lookbook' => 'Lookbook motif',
+        'why' => 'Kenapa Cheery Chic',
         'articles' => 'Artikel terbaru',
     ];
 
-    /** Ikon tetap untuk poin "Kenapa Albaniah", sesuai urutan. */
-    public const WHY_ICONS = ['sparkles', 'shield', 'refresh', 'truck'];
+    /** Ikon tetap untuk poin "Kenapa Cheery Chic", sesuai urutan. */
+    public const WHY_ICONS = ['sparkles', 'swatch', 'heart', 'truck'];
 
     /** @return list<string> seksi yang tampil, berurutan */
     public static function sections(): array
@@ -96,6 +98,27 @@ class Storefront
 
                 return ['icon' => self::WHY_ICONS[$i], 'title' => $title, 'text' => filled($text) ? $text : null];
             })->all();
+    }
+
+    /**
+     * Judul dengan kata penekanan miring emas: tulis *kata* untuk menandai.
+     * $lastWord: tanpa tanda bintang, kata terakhir yang ditekankan (dipakai judul hero).
+     */
+    public static function emphasize(?string $text, bool $lastWord = false): HtmlString
+    {
+        $html = e((string) $text);
+
+        if (str_contains($html, '*')) {
+            return new HtmlString(preg_replace('/\*(.+?)\*/u', '<em>$1</em>', $html));
+        }
+
+        return new HtmlString($lastWord ? preg_replace('/(\S+?)([.!?…]*)$/u', '<em>$1</em>$2', $html, 1) : $html);
+    }
+
+    /** Teks tanpa tanda bintang penekanan (untuk atribut/alt). */
+    public static function plain(?string $text): string
+    {
+        return str_replace('*', '', (string) $text);
     }
 
     /** @return list<string> */

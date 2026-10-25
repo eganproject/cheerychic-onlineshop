@@ -11,7 +11,7 @@
 <x-cart-notices :notices="$adjustments" class="mt-6" />
 
 @if ($lines->isEmpty())
-    <x-empty-state icon="bag" title="Keranjangmu masih kosong" description="Yuk, temukan mukena favoritmu dan tambahkan ke keranjang." class="py-20">
+    <x-empty-state icon="bag" title="Keranjangmu masih kosong" description="Yuk, temukan daster favoritmu dan tambahkan ke keranjang." class="py-20">
         <a href="{{ route('products.index') }}" class="btn btn-ink btn-pill">Mulai belanja</a>
     </x-empty-state>
 @else

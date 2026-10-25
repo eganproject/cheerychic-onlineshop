@@ -10,7 +10,7 @@ tidak muncul dan login biasa tetap jalan seperti sebelumnya.
 ## 1. Buat project Firebase
 
 1. Buka <https://console.firebase.google.com> → **Add project** (Buat project).
-   Nama bebas, mis. `albaniah-onlineshop`. Google Analytics boleh dimatikan.
+   Nama bebas, mis. `cheerychic-onlineshop`. Google Analytics boleh dimatikan.
 2. Paket **Spark (gratis)** sudah cukup untuk login Google.
 
 ## 2. Aktifkan login Google
@@ -23,7 +23,7 @@ tidak muncul dan login biasa tetap jalan seperti sebelumnya.
 
 **Authentication → Settings → Authorized domains → Add domain**, tambahkan:
 
-- `albaniah-onlineshop.test` (Laragon lokal)
+- `cheerychic-onlineshop.test` (Laragon lokal)
 - domain toko asli, mis. `mgaacc.com` dan `www.mgaacc.com`
 
 `localhost` biasanya sudah ada. Tanpa langkah ini popup Google menampilkan
@@ -41,8 +41,8 @@ error *unauthorized-domain*.
 
 ```env
 FIREBASE_API_KEY=AIza...          # apiKey
-FIREBASE_AUTH_DOMAIN=albaniah-onlineshop.firebaseapp.com   # authDomain
-FIREBASE_PROJECT_ID=albaniah-onlineshop                    # projectId
+FIREBASE_AUTH_DOMAIN=cheerychic-onlineshop.firebaseapp.com   # authDomain
+FIREBASE_PROJECT_ID=cheerychic-onlineshop                    # projectId
 FIREBASE_APP_ID=1:1234567890:web:abcdef               # appId
 ```
 

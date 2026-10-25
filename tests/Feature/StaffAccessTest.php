@@ -87,7 +87,7 @@ class StaffAccessTest extends TestCase
 
         $this->post(route('admin.staff.store'), [
             'name' => 'Rudi Gudang',
-            'email' => 'rudi@albaniah.test',
+            'email' => 'rudi@cheerychic.test',
             'staff_role' => StaffRole::Warehouse->value,
             'password' => 'rahasia123',
             'password_confirmation' => 'rahasia123',
@@ -96,7 +96,7 @@ class StaffAccessTest extends TestCase
             'is_active' => '0',
         ])->assertRedirect(route('admin.staff.index'));
 
-        $staff = User::where('email', 'rudi@albaniah.test')->firstOrFail();
+        $staff = User::where('email', 'rudi@cheerychic.test')->firstOrFail();
         $this->assertSame(UserRole::Admin, $staff->role);
         $this->assertSame(StaffRole::Warehouse, $staff->staff_role);
         $this->assertTrue($staff->is_active);
@@ -106,7 +106,7 @@ class StaffAccessTest extends TestCase
 
         // Staf baru bisa login dan langsung masuk panel admin.
         auth()->logout();
-        $this->post(route('login'), ['email' => 'rudi@albaniah.test', 'password' => 'rahasia123'])->assertRedirect(route('admin.dashboard'));
+        $this->post(route('login'), ['email' => 'rudi@cheerychic.test', 'password' => 'rahasia123'])->assertRedirect(route('admin.dashboard'));
         $this->assertDatabaseHas('activity_logs', ['action' => 'auth.login', 'user_id' => $staff->id]);
         $this->assertNotNull($staff->fresh()->last_login_at);
     }
@@ -180,10 +180,10 @@ class StaffAccessTest extends TestCase
         $customer = User::factory()->create();
 
         $this->actingAs($admin)->post(route('admin.staff.store'), [
-            'name' => 'X', 'email' => 'x@albaniah.test', 'staff_role' => 'owner',
+            'name' => 'X', 'email' => 'x@cheerychic.test', 'staff_role' => 'owner',
             'password' => 'rahasia123', 'password_confirmation' => 'rahasia123',
         ])->assertForbidden();
-        $this->assertDatabaseMissing('users', ['email' => 'x@albaniah.test']);
+        $this->assertDatabaseMissing('users', ['email' => 'x@cheerychic.test']);
 
         $this->actingAs(User::factory()->admin()->create())
             ->get(route('admin.staff.edit', $customer))->assertNotFound();

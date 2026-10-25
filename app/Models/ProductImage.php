@@ -22,8 +22,8 @@ class ProductImage extends Model
     protected static function booted(): void
     {
         // Hapus file fisik ketika record dihapus lewat Eloquent, setelah transaksi sukses.
-        // Foto dari URL luar (mis. data contoh) tidak punya file lokal.
-        static::deleted(fn (ProductImage $image) => $image->isRemote() ? null : DB::afterCommit(
+        // Foto dari URL luar / aset bawaan folder public (data contoh) tidak punya file di disk.
+        static::deleted(fn (ProductImage $image) => $image->isRemote() || $image->isBundled() ? null : DB::afterCommit(
             fn () => Storage::disk('public')->delete($image->path)
         ));
     }
@@ -39,8 +39,18 @@ class ProductImage extends Model
         return str_starts_with((string) $this->path, 'https://') || str_starts_with((string) $this->path, 'http://');
     }
 
+    /** Foto contoh bawaan aplikasi di folder public/images (mis. "images/demo/products/x.webp"). */
+    public function isBundled(): bool
+    {
+        return str_starts_with((string) $this->path, 'images/');
+    }
+
     public function url(): string
     {
-        return $this->isRemote() ? $this->path : Storage::disk('public')->url($this->path);
+        return match (true) {
+            $this->isRemote() => $this->path,
+            $this->isBundled() => asset($this->path),
+            default => Storage::disk('public')->url($this->path),
+        };
     }
 }
