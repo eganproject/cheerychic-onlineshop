@@ -26,6 +26,7 @@ class OrderController extends Controller
         $query = $this->filtered($request)
             ->with('user')
             ->withCount('items')
+            ->withMax(['items as preorder_days_max' => fn ($q) => $q->where('is_preorder', true)], 'preorder_days')
             ->when($status, fn ($q) => $q->where('status', $status));
 
         AdminList::sort($query, $request, [
@@ -165,6 +166,8 @@ class OrderController extends Controller
                     ->orWhereHas('user', fn ($u) => $u->where('email', 'like', "%{$term}%")));
             })
             ->when($request->filled('courier'), fn ($q) => $q->where('courier', $request->string('courier')->value()))
+            ->when($request->query('jenis') === 'pre-order', fn ($q) => $q->withPreorder())
+            ->when($request->query('jenis') === 'ready', fn ($q) => $q->whereDoesntHave('items', fn ($i) => $i->where('is_preorder', true)))
             ->when($from, fn ($q) => $q->where('created_at', '>=', $from->startOfDay()))
             ->when($to, fn ($q) => $q->where('created_at', '<=', $to->endOfDay()));
     }

@@ -7,7 +7,8 @@
 @props(['product', 'quickAdd' => true, 'eager' => false, 'rank' => null])
 @php
     $soldOut = ! $product->inStock();
-    $isNew = ! $product->isOnSale() && $product->created_at?->gt(now()->subDays(30));
+    $preorder = $product->isPreorder();
+    $isNew = ! $preorder && ! $product->isOnSale() && $product->created_at?->gt(now()->subDays(30));
     $variantLabel = \Illuminate\Support\Str::lower($product->variant_label ?: 'varian');
 @endphp
 <article {{ $attributes->merge(['class' => 'group relative flex flex-col text-center']) }}>
@@ -20,11 +21,16 @@
 
         <div class="pointer-events-none absolute bottom-2.5 left-2.5 flex flex-col items-start gap-1 sm:bottom-3 sm:left-3">
             @if ($soldOut)
-                <span class="tag bg-ink text-white">Stok habis</span>
-            @elseif ($product->isOnSale())
-                <span class="tag bg-accent-500 text-white">-{{ $product->discountPercent() }}%</span>
-            @elseif ($isNew)
-                <span class="tag bg-blush-100 text-blush-700 shadow-xs">Baru</span>
+                <span class="tag bg-ink text-white">{{ $preorder ? 'Kuota PO habis' : 'Stok habis' }}</span>
+            @else
+                @if ($preorder)
+                    <span class="tag gap-1 bg-sage-600 text-white shadow-xs" title="{{ $product->preorderSummary() }}"><x-icon name="clock" class="size-3" /> Pre Order</span>
+                @endif
+                @if ($product->isOnSale())
+                    <span class="tag bg-accent-500 text-white">-{{ $product->discountPercent() }}%</span>
+                @elseif ($isNew)
+                    <span class="tag bg-blush-100 text-blush-700 shadow-xs">Baru</span>
+                @endif
             @endif
         </div>
 
@@ -46,6 +52,9 @@
                 <p class="text-[11px] text-stone-400 line-through sm:text-xs">@rupiah($product->compare_at_price)</p>
             @endif
         </div>
+        @if ($preorder && ! $soldOut)
+            <p class="mt-1 text-[11px] font-medium text-sage-600 sm:text-xs">PO ±{{ $product->preorderDays() }} hari</p>
+        @endif
         @if ($product->review_count > 0)
             <p class="mt-1 flex items-center gap-1 text-[11px] text-stone-500 sm:text-xs">
                 <x-icon name="star" class="size-3.5 fill-brand-400 text-brand-400" />
@@ -57,7 +66,7 @@
         @if ($quickAdd)
             @php($btn = 'relative z-10 mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-full border text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:h-10 sm:text-[13px]')
             @if ($soldOut)
-                <span class="{{ $btn }} border-stone-200 text-stone-400">Stok habis</span>
+                <span class="{{ $btn }} border-stone-200 text-stone-400">{{ $preorder ? 'Kuota PO habis' : 'Stok habis' }}</span>
             @elseif ($product->has_variants)
                 <a href="{{ route('products.show', $product) }}" class="{{ $btn }} border-brand-300 bg-brand-50 text-ink hover:border-brand-400 hover:bg-brand-400"
                    aria-label="Pilih {{ $variantLabel }} {{ $product->name }}">
@@ -67,7 +76,7 @@
                 <form method="POST" action="{{ route('cart.store', $product) }}" data-cart-add class="w-full">
                     @csrf
                     <button class="{{ $btn }} border-brand-300 bg-brand-50 text-ink hover:border-brand-400 hover:bg-brand-400" aria-label="Tambah {{ $product->name }} ke keranjang">
-                        <x-icon name="plus" class="size-3.5" /> Keranjang
+                        <x-icon name="plus" class="size-3.5" /> {{ $preorder ? 'Pre Order' : 'Keranjang' }}
                     </button>
                 </form>
             @endif

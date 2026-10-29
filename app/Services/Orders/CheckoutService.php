@@ -85,6 +85,9 @@ class CheckoutService
                         'quantity' => $line->quantity,
                         'weight' => $unitWeight,
                         'subtotal' => $lineSubtotal,
+                        // Status PO disalin agar pesanan tidak berubah saat produk sudah ready stock.
+                        'is_preorder' => $product->isPreorder(),
+                        'preorder_days' => $product->isPreorder() ? $product->preorderDays() : null,
                     ],
                 ];
             }

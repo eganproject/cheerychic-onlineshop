@@ -157,6 +157,21 @@ class CartService
         return $this->lines()->sum(fn (CartLine $line) => $line->subtotal());
     }
 
+    /** Masa proses Pre Order terlama di keranjang (0 bila tidak ada produk PO). */
+    public function preorderDays(): int
+    {
+        return (int) $this->lines()->max(fn (CartLine $line) => $line->preorderDays());
+    }
+
+    /** Keranjang berisi produk PO sekaligus produk ready stock. */
+    public function hasMixedPreorder(): bool
+    {
+        $lines = $this->lines();
+
+        return $lines->contains(fn (CartLine $line) => $line->isPreorder())
+            && $lines->contains(fn (CartLine $line) => ! $line->isPreorder());
+    }
+
     public function totalWeight(): int
     {
         return $this->lines()->sum(fn (CartLine $line) => $line->weight());

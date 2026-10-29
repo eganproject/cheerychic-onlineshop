@@ -14,7 +14,11 @@ class StructuredData
     {
         $variants = $product->relationLoaded('activeVariants') ? $product->activeVariants : collect();
         $url = route('products.show', $product);
-        $availability = $product->inStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
+        $availability = match (true) {
+            ! $product->inStock() => 'https://schema.org/OutOfStock',
+            $product->isPreorder() => 'https://schema.org/PreOrder',
+            default => 'https://schema.org/InStock',
+        };
 
         $offers = $variants->count() > 1
             ? [

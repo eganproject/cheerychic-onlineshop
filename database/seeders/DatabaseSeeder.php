@@ -220,7 +220,7 @@ class DatabaseSeeder extends Seeder
         }
     }
 
-    /** @param  array{price: int, compare: ?int, weight: int, featured: bool, sku: string, text: string, size: string, variants?: array{0: string, 1: list<array{0: string, 1: ?int}>}}  $data */
+    /** @param  array{price: int, compare: ?int, weight: int, featured: bool, sku: string, text: string, size: string, variants?: array{0: string, 1: list<array{0: string, 1: ?int}>}, preorder?: array{0: int, 1: ?string}}  $data */
     private function seedProduct(Category $category, string $name, array $data): void
     {
         $product = Product::updateOrCreate(['slug' => Str::slug($name)], [
@@ -237,6 +237,11 @@ class DatabaseSeeder extends Seeder
 
         if (! $product->wasRecentlyCreated) {
             return;
+        }
+
+        // Contoh produk Pre Order (stok = kuota PO).
+        if ($preorder = $data['preorder'] ?? null) {
+            $product->update(['is_preorder' => true, 'preorder_days' => $preorder[0], 'preorder_note' => $preorder[1]]);
         }
 
         // Foto contoh bawaan di public/images/demo/products (urutan = urutan varian motif);
@@ -307,6 +312,7 @@ class DatabaseSeeder extends Seeder
         ],
         'Kalea One Set' => [
             'price' => 84900, 'compare' => 180000, 'weight' => 400, 'featured' => true, 'sku' => 'CC-KALEA',
+            'preorder' => [14, 'Batch perdana, dijahit setelah pesanan masuk.'],
             'text' => 'Kalea One Set: atasan halter neck bertingkat dari rayon premium bermotif, dipadukan celana loose rayon twill polos yang jatuh. Ada saku di sisi kanan, praktis untuk aktivitas sehari-hari.',
             'size' => "All size\n• Lingkar dada (LD): 120\n• Panjang baju (PB): 60\n• Lingkar pinggang (LP): 75 (karet)\n• Panjang celana (PC): 95\n• Saku di sisi kanan",
             'variants' => ['Motif', [['Olive Floral', null], ['Peach Floral', null], ['Merah Ditsy', null]]],

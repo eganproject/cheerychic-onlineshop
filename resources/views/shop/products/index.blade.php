@@ -16,6 +16,7 @@
         'koleksi' => $activeCollection && ($activeCategory || request('q')) ? 'Koleksi: '.$activeCollection->name : null,
         'tersedia' => request()->boolean('tersedia') ? 'Tersedia' : null,
         'promo' => request()->boolean('promo') ? 'Sedang diskon' : null,
+        'po' => request()->boolean('po') ? 'Pre Order' : null,
         'harga' => ($minPrice || $maxPrice)
             ? 'Harga: '.($minPrice ? \App\Support\Money::rupiah($minPrice) : 'Rp0').' – '.($maxPrice ? \App\Support\Money::rupiah($maxPrice) : '∞')
             : null,
@@ -159,6 +160,11 @@
                     <a href="{{ $toggleUrl('promo') }}" @class(['chip h-10 px-3.5 py-0', 'chip-active' => request()->boolean('promo')]) @if (request()->boolean('promo')) aria-pressed="true" @endif>
                         <x-icon name="tag" class="size-4" /> Diskon
                     </a>
+                    @if ($hasPreorder)
+                        <a href="{{ $toggleUrl('po') }}" @class(['chip h-10 px-3.5 py-0', 'chip-active' => request()->boolean('po')]) @if (request()->boolean('po')) aria-pressed="true" @endif>
+                            <x-icon name="clock" class="size-4" /> Pre Order
+                        </a>
+                    @endif
                 </div>
 
                 <p class="ml-auto hidden text-sm whitespace-nowrap text-stone-500 sm:block">
@@ -276,6 +282,12 @@
                                 <input type="checkbox" name="promo" value="1" class="peer sr-only" @checked(request()->boolean('promo'))>
                                 <span class="{{ $sheetTone }}"><x-icon name="tag" class="size-4" /> Sedang diskon</span>
                             </label>
+                            @if ($hasPreorder)
+                                <label class="cursor-pointer">
+                                    <input type="checkbox" name="po" value="1" class="peer sr-only" @checked(request()->boolean('po'))>
+                                    <span class="{{ $sheetTone }}"><x-icon name="clock" class="size-4" /> Pre Order</span>
+                                </label>
+                            @endif
                         </div>
                     </div>
 

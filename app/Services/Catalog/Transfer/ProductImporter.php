@@ -27,7 +27,7 @@ class ProductImporter extends Importer
     public const COLUMNS = [
         'slug', 'nama_produk', 'kategori', 'deskripsi', 'sku_produk', 'aktif', 'unggulan',
         'label_varian', 'nama_varian', 'sku_varian', 'varian_aktif',
-        'harga', 'harga_coret', 'berat_gram', 'stok', 'url_gambar',
+        'harga', 'harga_coret', 'berat_gram', 'stok', 'url_gambar', 'pre_order_hari',
     ];
 
     public const MAX_VARIANTS = 50;
@@ -54,6 +54,9 @@ class ProductImporter extends Importer
             'harga_normal' => 'harga_coret',
             'stock' => 'stok',
             'status' => 'aktif',
+            'pre_order' => 'pre_order_hari',
+            'po' => 'pre_order_hari',
+            'po_hari' => 'pre_order_hari',
         ];
     }
 
@@ -280,6 +283,7 @@ class ProductImporter extends Importer
             'description' => $read($firstLine, fn () => CellValue::string($first('deskripsi'), 10000, 'Deskripsi')),
             'is_active' => $read($firstLine, fn () => CellValue::boolean($first('aktif'), 'Aktif')),
             'is_featured' => $read($firstLine, fn () => CellValue::boolean($first('unggulan'), 'Unggulan')),
+            'preorder_days' => $read($firstLine, fn () => CellValue::integer($first('pre_order_hari'), 'Pre Order (hari)', 0, 180)),
             'variant_label' => $read($firstLine, fn () => CellValue::string($first('label_varian'), 50, 'Label varian')),
             'category' => $read($firstLine, fn () => $this->category($first('kategori'), $lookup['categories'])),
             'images' => $read($firstLine, fn () => CellValue::urls($first('url_gambar'), self::MAX_IMAGES)) ?? [],
@@ -475,6 +479,14 @@ class ProductImporter extends Importer
         foreach (['name', 'sku', 'description', 'is_active', 'is_featured', 'weight'] as $field) {
             if ($plan[$field] !== null) {
                 $product->{$field} = $plan[$field];
+            }
+        }
+        // pre_order_hari: 0 = bukan PO, angka = PO dengan lama proses itu, kosong = tidak berubah.
+        if (($plan['preorder_days'] ?? null) !== null) {
+            $product->is_preorder = $plan['preorder_days'] > 0;
+            $product->preorder_days = $plan['preorder_days'] ?: null;
+            if (! $product->is_preorder) {
+                $product->preorder_note = null;
             }
         }
         if ($isVariant && $plan['variant_label'] !== null) {

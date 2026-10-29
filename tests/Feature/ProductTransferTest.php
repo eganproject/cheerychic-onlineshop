@@ -73,7 +73,7 @@ class ProductTransferTest extends TestCase
         return array_values(iterator_to_array(Spreadsheet::read($path, $format)));
     }
 
-    private const HEADER = ['slug', 'nama_produk', 'kategori', 'deskripsi', 'sku_produk', 'aktif', 'unggulan', 'label_varian', 'nama_varian', 'sku_varian', 'varian_aktif', 'harga', 'harga_coret', 'berat_gram', 'stok', 'url_gambar'];
+    private const HEADER = ['slug', 'nama_produk', 'kategori', 'deskripsi', 'sku_produk', 'aktif', 'unggulan', 'label_varian', 'nama_varian', 'sku_varian', 'varian_aktif', 'harga', 'harga_coret', 'berat_gram', 'stok', 'url_gambar', 'pre_order_hari'];
 
     private function row(array $values): array
     {
@@ -175,6 +175,31 @@ class ProductTransferTest extends TestCase
         $this->assertSame(StockMovementType::Initial, $movement->type);
         $this->assertSame($this->admin->id, $movement->user_id);
         $this->assertSame(3, StockMovement::count());
+    }
+
+    public function test_import_sets_and_clears_preorder_and_export_includes_it(): void
+    {
+        $existing = Product::factory()->create(['sku' => 'OLD-PO', 'is_preorder' => true, 'preorder_days' => 10, 'preorder_note' => 'Batch 1']);
+
+        $this->commit($this->upload([
+            self::HEADER,
+            $this->row(['nama_produk' => 'Daster PO', 'sku_produk' => 'NEW-PO', 'harga' => '80000', 'stok' => '20', 'pre_order_hari' => '21']),
+            $this->row(['slug' => $existing->slug, 'pre_order_hari' => '0']),
+        ]));
+
+        $new = Product::firstWhere('sku', 'NEW-PO');
+        $this->assertTrue($new->is_preorder);
+        $this->assertSame(21, $new->preorder_days);
+
+        $existing->refresh();
+        $this->assertFalse($existing->is_preorder);
+        $this->assertNull($existing->preorder_days);
+        $this->assertNull($existing->preorder_note);
+
+        $rows = $this->readDownload($this->actingAs($this->admin)->get(route('admin.products.export', ['format' => 'csv'])), 'csv');
+        $exported = collect($rows)->keyBy('sku_produk');
+        $this->assertEquals(21, $exported['NEW-PO']['pre_order_hari']);
+        $this->assertEquals(0, $exported['OLD-PO']['pre_order_hari']);
     }
 
     public function test_row_errors_are_reported_and_valid_products_still_import(): void

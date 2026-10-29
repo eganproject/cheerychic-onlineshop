@@ -133,6 +133,8 @@ class CartController extends Controller
             'adjustments' => $this->cart->adjustments(),
             'subtotal' => $this->cart->subtotal(),
             'weight' => $this->cart->totalWeight(),
+            'preorderDays' => $this->cart->preorderDays(),
+            'preorderMixed' => $this->cart->hasMixedPreorder(),
         ];
     }
 

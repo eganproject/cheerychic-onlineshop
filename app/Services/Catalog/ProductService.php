@@ -32,6 +32,9 @@ class ProductService
             $product->slug = ($data['slug'] ?? null) ?: $this->uniqueSlug($data['name'], $product);
             $product->is_active = (bool) ($data['is_active'] ?? false);
             $product->is_featured = (bool) ($data['is_featured'] ?? false);
+            $product->is_preorder = (bool) ($data['is_preorder'] ?? false);
+            $product->preorder_days = $product->is_preorder ? (int) $data['preorder_days'] : null;
+            $product->preorder_note = $product->is_preorder ? (($data['preorder_note'] ?? null) ?: null) : null;
             $product->variant_label = $hasVariants ? ($data['variant_label'] ?? null) : null;
 
             if ($hasVariants) {

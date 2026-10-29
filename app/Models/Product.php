@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 #[Fillable([
     'category_id', 'name', 'slug', 'sku', 'description', 'price', 'compare_at_price',
     'weight', 'variant_label', 'is_active', 'is_featured',
+    'is_preorder', 'preorder_days', 'preorder_note',
 ])]
 class Product extends Model
 {
@@ -38,6 +39,8 @@ class Product extends Model
             'weight' => 'integer',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'is_preorder' => 'boolean',
+            'preorder_days' => 'integer',
             'has_variants' => 'boolean',
             'rating_avg' => 'float',
             'review_count' => 'integer',
@@ -106,6 +109,12 @@ class Product extends Model
     protected function active(Builder $query): void
     {
         $query->where('is_active', true);
+    }
+
+    #[Scope]
+    protected function preorder(Builder $query): void
+    {
+        $query->where('is_preorder', true);
     }
 
     #[Scope]
@@ -187,6 +196,32 @@ class Product extends Model
     public function inStock(): bool
     {
         return $this->stock > 0;
+    }
+
+    /**
+     * Produk Pre Order: dibeli seperti biasa (stok = kuota PO), tapi baru
+     * dikirim setelah masa produksi `preorder_days` hari sejak pembayaran.
+     */
+    public function isPreorder(): bool
+    {
+        return (bool) $this->is_preorder;
+    }
+
+    /** Lama proses PO dalam hari (minimal 1 bila PO aktif). */
+    public function preorderDays(): int
+    {
+        return $this->isPreorder() ? max(1, (int) $this->preorder_days) : 0;
+    }
+
+    /** Contoh: "Dikirim ±14 hari setelah pembayaran". */
+    public function preorderSummary(): ?string
+    {
+        return $this->isPreorder() ? self::preorderText($this->preorderDays()) : null;
+    }
+
+    public static function preorderText(int $days): string
+    {
+        return 'Dikirim ±'.$days.' hari setelah pembayaran';
     }
 
     public function hasReviews(): bool
