@@ -24,32 +24,33 @@ class ProductCollection extends Model
 
     /**
      * Warna ubin di beranda => [kelas ubin, kelas ikon, label admin].
-     * Palet kalem Albaniah (krem, navy, rose gold); kunci lama tetap dipakai
+     * Palet Cheery Chic (krem, kakao, emas, blush, sage); kunci lama tetap dipakai
      * supaya pilihan yang sudah tersimpan tidak hilang.
      */
     public const TONES = [
         'sand' => ['bg-sand-100 text-ink', 'text-brand-500/25', 'Krem'],
-        'ink' => ['bg-ink text-white', 'text-brand-300/40', 'Navy'],
-        'cyan' => ['bg-brand-300 text-ink', 'text-white/40', 'Rose gold'],
-        'sky' => ['bg-brand-50 text-ink', 'text-brand-500/30', 'Rose gold lembut'],
-        'volt' => ['bg-sand-200 text-ink', 'text-ink/10', 'Gading'],
-        'orange' => ['bg-navy-700 text-white', 'text-white/20', 'Navy lembut'],
+        'ink' => ['bg-ink text-white', 'text-brand-300/40', 'Kakao'],
+        'cyan' => ['bg-brand-300 text-ink', 'text-white/40', 'Emas'],
+        'sky' => ['bg-blush-100 text-ink', 'text-blush-400/40', 'Blush'],
+        'volt' => ['bg-sage-100 text-ink', 'text-sage-500/30', 'Sage'],
+        'orange' => ['bg-navy-700 text-white', 'text-white/20', 'Kakao lembut'],
     ];
 
     /** Ikon garis yang tersedia di <x-category-icon> => label admin. */
     public const ICONS = [
-        'mukena' => 'Mukena',
-        'veil' => 'Tutup dagu / hijab',
-        'travel' => 'Travel / umrah',
-        'lace' => 'Renda / bordir',
-        'premium' => 'Premium / velvet',
-        'sajadah' => 'Sajadah',
-        'kids' => 'Anak',
+        'dress' => 'Daster / dress',
+        'set' => 'One set / setelan',
+        'busui' => 'Busui & bumil',
+        'kaftan' => 'Kaftan / homedress',
+        'pajama' => 'Piyama',
+        'jumbo' => 'Ukuran jumbo',
+        'batik' => 'Batik / motif',
+        'flower' => 'Motif bunga',
+        'kids' => 'Anak / couple',
         'gift' => 'Hampers / hadiah',
-        'moon' => 'Ramadan / lebaran',
         'accessories' => 'Aksesoris',
-        'flower' => 'Bunga Albaniah (umum)',
-        'sparkles' => 'Kilau',
+        'moon' => 'Ramadan / lebaran',
+        'sparkles' => 'Kilau / premium',
     ];
 
     protected function casts(): array

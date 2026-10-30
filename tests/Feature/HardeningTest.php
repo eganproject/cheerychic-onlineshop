@@ -56,7 +56,7 @@ class HardeningTest extends TestCase
 
     public function test_backup_command_stores_a_compressed_database_dump(): void
     {
-        $database = tempnam(sys_get_temp_dir(), 'albaniah-db');
+        $database = tempnam(sys_get_temp_dir(), 'cheerychic-db');
         file_put_contents($database, 'SQLite format 3');
 
         config([

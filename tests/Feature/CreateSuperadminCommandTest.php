@@ -82,6 +82,6 @@ class CreateSuperadminCommandTest extends TestCase
 
         $this->artisan('db:seed', ['--force' => true])->assertSuccessful();
 
-        $this->assertDatabaseMissing('users', ['email' => 'admin@albaniah.test']);
+        $this->assertDatabaseMissing('users', ['email' => 'admin@cheerychic.test']);
     }
 }

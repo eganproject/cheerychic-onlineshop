@@ -32,7 +32,7 @@ class DemoOrderSeeder extends Seeder
         foreach (['Siti Rahma', 'Andi Pratama', 'Dewi Lestari', 'Rizky Hidayat', 'Nur Aisyah', 'Fajar Nugroho'] as $i => $name) {
             $customers->push(User::factory()->create([
                 'name' => $name,
-                'email' => 'demo'.($i + 1).'@albaniah.test',
+                'email' => 'demo'.($i + 1).'@cheerychic.test',
                 'created_at' => now()->subDays(random_int(1, 150)),
             ]));
         }

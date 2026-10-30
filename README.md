@@ -1,6 +1,6 @@
-# Albaniah Online Shop
+# Cheery Chic Online Shop
 
-Toko online resmi **Albaniah Mukena**, brand mukena dari Tasikmalaya (mukena dewasa renda & bordir, travel, tutup dagu, dan perlengkapan ibadah), berbasis Laravel 13, MySQL, Tailwind CSS v4, dan Alpine.js.
+Toko online resmi **Cheery Chic**, brand daster wanita (daster, dress, dan one set rayon premium bermotif ceria), berbasis Laravel 13, MySQL, Tailwind CSS v4, dan Alpine.js.
 
 ## Fitur saat ini
 
@@ -31,10 +31,10 @@ Akun contoh dari seeder (password: `password`):
 
 | Peran | Email |
 |---|---|
-| Owner (akses penuh) | `admin@albaniah.test` |
-| Staf Gudang | `gudang@albaniah.test` |
-| Customer Service | `cs@albaniah.test` |
-| Pelanggan | `pelanggan@albaniah.test` |
+| Owner (akses penuh) | `admin@cheerychic.test` |
+| Staf Gudang | `gudang@cheerychic.test` |
+| Customer Service | `cs@cheerychic.test` |
+| Pelanggan | `pelanggan@cheerychic.test` |
 
 Panel admin punya jabatan staf (Owner, Admin, Staf Gudang, Customer Service).
 Hak akses tiap jabatan ada di `App\Enums\StaffRole::permissions()`; route admin

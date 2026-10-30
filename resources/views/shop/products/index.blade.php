@@ -35,18 +35,18 @@
         : null;
     $intro = $activeCategory?->description
         ?: ($activeCollection && ! $activeCategory ? ($activeCollection->tagline ?: $activeCollection->description) : null)
-        ?: (request('q') ? 'Produk yang cocok dengan pencarianmu.' : (request()->boolean('promo') ? 'Harga spesial untuk mukena favorit, selama stok masih ada.' : 'Mukena renda, bordir, travel, tutup dagu, dan perlengkapan ibadah untuk menemani setiap sujudmu.'));
+        ?: (request('q') ? 'Produk yang cocok dengan pencarianmu.' : (request()->boolean('promo') ? 'Harga spesial untuk daster favorit, selama stok masih ada.' : 'Daster, dress, dan one set rayon premium bermotif ceria. Adem dipakai seharian, cantik di rumah maupun di luar.'));
 @endphp
 <x-layouts.shop :title="$context?->name ?? 'Semua Produk'" :description="$metaDescription">
     @php
         $sheetTone = 'flex min-h-11 items-center justify-center gap-2 rounded-xl border border-stone-200 px-3 text-center text-sm font-medium transition peer-checked:border-ink peer-checked:bg-ink peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400 hover:border-stone-400';
         $bubble = 'relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-full bg-white transition sm:size-20 lg:size-[88px]';
-        $bubbleOn = 'ring-2 ring-ink ring-offset-2 ring-offset-sand-100';
-        $bubbleOff = 'ring-1 ring-sand-300 group-hover:ring-brand-400';
+        $bubbleOn = 'ring-2 ring-ink ring-offset-2 ring-offset-blush-50';
+        $bubbleOff = 'ring-1 ring-blush-200 group-hover:ring-brand-400';
     @endphp
     <div x-data="{ filters: false }" x-effect="document.body.classList.toggle('overflow-hidden', filters)" @keydown.escape.window="filters = false">
-        {{-- Kepala katalog: latar krem bermotif lengkung mihrab, judul rata tengah --}}
-        <section class="relative isolate overflow-hidden bg-sand-100">
+        {{-- Kepala katalog: latar blush bermotif bunga kain daster, judul rata tengah, tepi bawah renda --}}
+        <section class="relative isolate overflow-hidden bg-blush-50">
             <div class="ornament-bg-light absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,#000,transparent_85%)]" aria-hidden="true"></div>
             <div class="shop-container pt-5 pb-7 text-center lg:pt-8 lg:pb-10">
                 <nav class="flex flex-wrap items-center justify-center gap-1.5 text-xs text-stone-500" aria-label="Breadcrumb">
@@ -111,7 +111,7 @@
                                             <x-category-icon :for="$category->name.' '.$category->slug" class="size-7 text-brand-600 sm:size-8" />
                                             @if ($cover = $categoryCovers[$category->id] ?? null)
                                                 <img src="{{ $cover }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()"
-                                                     class="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-105">
+                                                     class="absolute inset-0 size-full object-cover object-top transition duration-500 group-hover:scale-105">
                                             @endif
                                         </span>
                                         <span @class(['text-xs leading-tight line-clamp-2 sm:text-[13px]', 'font-semibold text-ink' => $on, 'font-medium text-stone-600 group-hover:text-ink' => ! $on])>
@@ -139,6 +139,7 @@
                 @endif
             </div>
         </section>
+        <div class="scallop -mt-px text-blush-50" aria-hidden="true"></div>
 
         {{-- Bar alat (lengket di bawah navbar): filter, filter cepat, jumlah, urutan --}}
         <div class="sticky top-16 z-30 border-b border-stone-200/80 bg-white/95 backdrop-blur-md lg:top-[72px]">

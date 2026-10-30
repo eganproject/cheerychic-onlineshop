@@ -3,16 +3,17 @@
     <div class="grid min-h-screen lg:grid-cols-2">
         {{-- Panel brand --}}
         <div class="relative hidden overflow-hidden bg-ink lg:block">
-            <img src="{{ asset(\App\Support\Storefront::DEFAULT_IMAGE_MOBILE) }}" alt="" class="pointer-events-none absolute inset-0 size-full object-cover object-top opacity-90" aria-hidden="true">
-            <div class="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-ink via-ink/90 to-transparent" aria-hidden="true"></div>
+            <img src="{{ \App\Support\Storefront::hero()['image'] }}" alt="" class="pointer-events-none absolute inset-0 size-full object-cover object-top" aria-hidden="true">
+            <div class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-ink via-ink/85 to-transparent" aria-hidden="true"></div>
+            <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink/50 to-transparent" aria-hidden="true"></div>
             <div class="relative flex h-full flex-col justify-between p-12 text-white">
                 <a href="{{ route('home') }}" class="self-start"><x-wordmark dark size="lg" /></a>
                 <div class="mt-auto max-w-md">
-                    <p class="kicker text-white/60">{{ config('shop.hashtag', '#TemaniIbadahmu') }}</p>
-                    <h2 class="display mt-5 text-5xl leading-[1.02]">Anggun dalam sujud, tenang dalam doa.</h2>
-                    <p class="mt-5 text-base text-white/60">Mukena renda, bordir, travel, dan tutup dagu yang adem dan anggun untuk menemani setiap ibadahmu.</p>
+                    <p class="kicker text-white/60">{{ config('shop.hashtag', '#CeriaDiRumah') }}</p>
+                    <h2 class="display mt-5 text-5xl leading-[1.06]">Cantik di rumah, <em class="text-brand-300">ceria</em> setiap hari.</h2>
+                    <p class="mt-5 text-base text-white/70">Masuk untuk simpan motif incaran, checkout lebih cepat, dan dapat info flash sale duluan.</p>
                     <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/75">
-                        @foreach ([['shield', 'Produk resmi'], ['truck', 'Kirim se-Indonesia'], ['lock', 'Bayar aman']] as [$icon, $label])
+                        @foreach ([['sparkles', 'Rayon premium'], ['truck', 'Kirim se-Indonesia'], ['lock', 'Bayar aman']] as [$icon, $label])
                             <li class="flex items-center gap-2"><x-icon :name="$icon" class="size-4 text-brand-400" /> {{ $label }}</li>
                         @endforeach
                     </ul>

@@ -12,7 +12,7 @@
     $accountUrl = $user ? $user->homeRoute() : route('login');
     $instagram = config('shop.instagram') ? ltrim(config('shop.instagram'), '@') : null;
     $whatsapp = config('shop.whatsapp');
-    $hashtag = config('shop.hashtag', '#TemaniIbadahmu');
+    $hashtag = config('shop.hashtag', '#CeriaDiRumah');
     $hasMega = $navCategories->isNotEmpty() || $navCollections->isNotEmpty();
 
     // Header transparan (menyatu dengan hero gelap) saat halaman di paling atas; jadi putih solid saat di-scroll.
@@ -100,14 +100,14 @@
             <div class="shop-container flex h-16 items-center gap-3 lg:h-[72px] lg:gap-10">
                 {{-- Logo --}}
                 <a href="{{ route('home') }}" class="shrink-0 py-1 lg:py-0" aria-label="{{ config('shop.full_name') }}">
-                    <x-logo :tagline="false" adaptive class="h-8 lg:h-10" />
+                    <x-logo adaptive class="h-9 lg:h-11" />
                 </a>
 
                 {{-- Mobile: kolom cari (menu utama ada di navigasi bawah) --}}
                 <button type="button" @click="search = true"
                         class="flex h-11 min-w-0 flex-1 items-center gap-2.5 rounded-full bg-sand-100 px-4 text-left text-sm text-stone-500 transition active:bg-sand-200 group-data-[clear]/header:bg-white/10 group-data-[clear]/header:text-white/70 group-data-[clear]/header:ring-1 group-data-[clear]/header:ring-white/15 lg:hidden">
                     <x-icon name="search" class="size-[18px] shrink-0" />
-                    <span class="truncate">{{ request('q') ?: 'Cari mukena, sajadah...' }}</span>
+                    <span class="truncate">{{ request('q') ?: 'Cari daster, one set...' }}</span>
                 </button>
 
                 {{-- Navigasi utama (desktop) --}}
@@ -237,11 +237,11 @@
                                 @endforeach
                             </ul>
                         </div>
-                        <a href="{{ $nav[3]['url'] }}" class="ornament-bg group relative flex min-h-60 flex-col justify-end overflow-hidden rounded-2xl bg-ink p-6 text-white">
-                            <x-logo variant="mark" mono class="absolute -top-4 -right-6 h-32 text-white/[0.06]" aria-hidden="true" />
-                            <span class="relative kicker text-white/60">Promo</span>
-                            <span class="relative display mt-3 text-2xl leading-tight">Harga spesial untuk mukena favorit.</span>
-                            <span class="relative mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-300">Belanja promo <x-icon name="arrow-right" class="size-4 transition group-hover:translate-x-1" /></span>
+                        <a href="{{ $nav[3]['url'] }}" class="ornament-bg-light arch group relative flex min-h-60 flex-col justify-end overflow-hidden bg-blush-100 p-6 text-ink">
+                            <x-logo variant="mark" class="absolute -top-3 -right-4 h-32 opacity-25" aria-hidden="true" />
+                            <span class="relative kicker text-blush-700">Flash sale</span>
+                            <span class="relative display mt-3 text-[1.7rem] leading-tight">Daster favorit, harga <em>ceria</em>.</span>
+                            <span class="relative mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-ink">Belanja promo <x-icon name="arrow-right" class="size-4 transition group-hover:translate-x-1" /></span>
                         </a>
                     </div>
                 </div>
@@ -264,7 +264,7 @@
                     </div>
                     <form action="{{ route('products.index') }}" method="GET" class="mt-3 flex items-center gap-3 border-b border-ink pb-3">
                         <x-icon name="search" class="size-6 shrink-0 text-stone-400" />
-                        <input type="search" name="q" value="{{ request('q') }}" placeholder="Mukena renda, mukena travel, tutup dagu..."
+                        <input type="search" name="q" value="{{ request('q') }}" placeholder="Daster busui, one set kulot, motif bunga..."
                                x-effect="if (search) $nextTick(() => $el.focus())"
                                class="w-full border-0 bg-transparent p-0 text-xl font-semibold tracking-tight placeholder:font-normal placeholder:text-stone-300 focus:ring-0 sm:text-3xl">
                         <button class="btn btn-ink btn-pill hidden shrink-0 sm:inline-flex">Cari</button>
@@ -384,14 +384,15 @@
         </main>
 
         {{-- Footer --}}
-        <footer class="bottom-nav-spacer mt-20 bg-ink text-white lg:mt-28">
+        <footer class="bottom-nav-spacer relative mt-20 bg-ink text-white lg:mt-28">
+            <span class="scallop-up absolute inset-x-0 -top-3.5 text-ink" aria-hidden="true"></span>
             {{-- Ajakan komunitas (disembunyikan saat checkout supaya fokus membayar) --}}
             <div @class(['ornament-bg border-b border-white/10', 'hidden' => request()->routeIs('checkout.*')])>
                 <div class="shop-container flex flex-col gap-8 py-14 lg:flex-row lg:items-end lg:justify-between lg:py-20">
                     <div class="max-w-2xl">
                         <p class="kicker text-white/55">{{ $hashtag }}</p>
-                        <h2 class="display mt-4 text-3xl leading-[1.05] sm:text-5xl">Ibadah lebih khusyuk, tampil tetap anggun.</h2>
-                        <p class="mt-4 max-w-lg text-sm leading-relaxed text-white/60 sm:text-base">Bagikan momen ibadahmu bersama Albaniah dengan tagar {{ $hashtag }}. Tim kami siap membantu memilih ukuran, bahan, dan warna mukena yang pas.</p>
+                        <h2 class="display mt-4 text-3xl leading-[1.1] sm:text-5xl">Di rumah aja, tetap <em class="text-brand-300">cantik</em> &amp; ceria.</h2>
+                        <p class="mt-4 max-w-lg text-sm leading-relaxed text-white/60 sm:text-base">Pamerkan gaya santaimu pakai tagar {{ $hashtag }}, siapa tahu kamu yang kami repost! Bingung pilih motif atau ukuran? Tim {{ config('shop.name') }} siap bantu lewat chat.</p>
                     </div>
                     <div class="flex flex-wrap gap-3">
                         @if ($instagram)
@@ -410,9 +411,9 @@
             <div class="shop-container py-14 lg:py-16">
                 <div class="grid gap-12 lg:grid-cols-12">
                     <div class="lg:col-span-4">
-                        <a href="{{ route('home') }}" class="inline-block" aria-label="{{ config('shop.full_name') }}"><x-logo dark class="h-12" /></a>
+                        <a href="{{ route('home') }}" class="inline-block" aria-label="{{ config('shop.full_name') }}"><x-logo dark variant="stacked" class="h-24" /></a>
                         <p class="mt-5 max-w-xs text-sm leading-relaxed text-white/55">{{ config('shop.tagline') }}.</p>
-                        <p class="mt-4 text-[11px] font-semibold tracking-[0.18em] text-white/80 uppercase">{{ config('shop.motto') }}</p>
+                        <p class="mt-4 font-display text-lg text-brand-300 italic">{{ config('shop.motto') }}</p>
                         @if (config('shop.email') || $whatsapp)
                             <ul class="mt-6 space-y-2 text-sm text-white/65">
                                 @if ($whatsapp)
@@ -451,7 +452,7 @@
                         <div class="col-span-2 sm:col-span-1">
                             <h3 class="eyebrow text-white/35">Kenapa {{ config('shop.name') }}</h3>
                             <ul class="mt-3 text-sm text-white/70 lg:mt-5 lg:space-y-3">
-                                @foreach ([['shield', 'Produk resmi Albaniah'], ['truck', 'Kirim se-Indonesia'], ['refresh', 'Garansi tukar 7 hari'], ['lock', 'Pembayaran aman']] as [$icon, $label])
+                                @foreach ([['sparkles', 'Rayon premium adem'], ['truck', 'Kirim se-Indonesia'], ['refresh', 'Garansi tukar 7 hari'], ['lock', 'Pembayaran aman']] as [$icon, $label])
                                     <li class="flex min-h-9 items-center gap-2.5 lg:min-h-0"><x-icon :name="$icon" class="size-4 text-brand-400" /> {{ $label }}</li>
                                 @endforeach
                             </ul>

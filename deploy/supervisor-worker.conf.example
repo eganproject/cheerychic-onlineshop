@@ -1,11 +1,11 @@
 ; Worker antrean (email, notifikasi) untuk VPS.
-; Salin ke /etc/supervisor/conf.d/albaniah-worker.conf lalu:
-;   sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl start albaniah-worker:*
+; Salin ke /etc/supervisor/conf.d/cheerychic-worker.conf lalu:
+;   sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl start cheerychic-worker:*
 
-[program:albaniah-worker]
+[program:cheerychic-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/albaniah-onlineshop/artisan queue:work --sleep=3 --tries=3 --max-time=3600
-directory=/var/www/albaniah-onlineshop
+command=php /var/www/cheerychic-onlineshop/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+directory=/var/www/cheerychic-onlineshop
 user=www-data
 numprocs=1
 autostart=true
@@ -14,6 +14,6 @@ stopasgroup=true
 killasgroup=true
 stopwaitsecs=3600
 redirect_stderr=true
-stdout_logfile=/var/www/albaniah-onlineshop/storage/logs/worker.log
+stdout_logfile=/var/www/cheerychic-onlineshop/storage/logs/worker.log
 stdout_logfile_maxbytes=10MB
 stdout_logfile_backups=3

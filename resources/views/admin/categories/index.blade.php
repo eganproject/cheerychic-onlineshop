@@ -12,7 +12,7 @@
         </form>
 
         @if ($categories->isEmpty())
-            <x-empty-state icon="tag" :title="$search ? 'Kategori tidak ditemukan' : 'Belum ada kategori'" description="Buat kategori pertama, misalnya Mukena Dewasa atau Mukena Travel.">
+            <x-empty-state icon="tag" :title="$search ? 'Kategori tidak ditemukan' : 'Belum ada kategori'" description="Buat kategori pertama, misalnya Daster & Dress atau One Set.">
                 <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">Tambah kategori</a>
             </x-empty-state>
         @else

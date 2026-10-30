@@ -16,13 +16,13 @@
             </div>
             <x-form.select name="parent_id" label="Induk kategori" placeholder="Tidak ada (kategori utama)" :search="true"
                 :options="$parents->pluck('name', 'id')->all()" :selected="$category->parent_id"
-                hint="Pilih induk untuk menjadikannya subkategori, mis. Mukena Dewasa › Mukena Renda."
+                hint="Pilih induk untuk menjadikannya subkategori, mis. One Set › Setelan Celana Kulot."
                 tip="Kategori maksimal 2 tingkat: kategori utama dan subkategori. Kategori utama tampil di menu toko, subkategori di dalamnya."
                 :tips="['Cukup 4–6 kategori utama supaya menu tidak penuh.', 'Produk dipasang di subkategori; pembeli yang membuka kategori induk tetap melihatnya.']" />
             <div>
                 <div class="label-row">
                     <label for="slug" class="label">Slug URL <span class="font-normal text-stone-400">(kosongkan untuk otomatis)</span></label>
-                    <x-tip title="Slug URL" text="Nama kategori di alamat link, mis. /produk?kategori=mukena-dewasa. Dibuat otomatis dari nama bila dikosongkan."
+                    <x-tip title="Slug URL" text="Nama kategori di alamat link, mis. /produk?kategori=daster-dress. Dibuat otomatis dari nama bila dikosongkan."
                         :tips="['Jangan diubah setelah link kategori dipakai di banner, hero, atau iklan, karena link lama akan kosong.']" />
                 </div>
                 <input id="slug" name="slug" value="{{ old('slug', $category->slug) }}" class="input @error('slug') input-error @enderror">

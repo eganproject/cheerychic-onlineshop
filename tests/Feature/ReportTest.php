@@ -259,7 +259,7 @@ class ReportTest extends TestCase
         $this->assertTrue(Order::count() > 50);
         $this->assertTrue(DB::table('order_items')->count() > 50);
 
-        $this->actingAs(User::firstWhere('email', 'admin@albaniah.test'))
+        $this->actingAs(User::firstWhere('email', 'admin@cheerychic.test'))
             ->get(route('admin.dashboard'))->assertOk();
     }
 }

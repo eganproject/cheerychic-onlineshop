@@ -49,7 +49,7 @@
                 <div class="grid gap-5 sm:grid-cols-2">
                     <x-form.category-select name="category_id" label="Kategori" :categories="$categories" :selected="$product->category_id" placeholder="Tanpa kategori"
                         tip="Jenis utama produk (satu produk = satu kategori). Menentukan letaknya di menu & filter katalog."
-                        :tips="['Pilih yang paling spesifik, mis. Mukena Dewasa › Mukena Renda, supaya pembeli mudah menemukannya.', 'Untuk tema lintas jenis (Travel, Hadiah Lebaran) pakai Koleksi, bukan kategori.']" />
+                        :tips="['Pilih yang paling spesifik, mis. One Set › Setelan Celana Kulot, supaya pembeli mudah menemukannya.', 'Untuk tema lintas jenis (Busui Friendly, Kado untuk Mama) pakai Koleksi, bukan kategori.']" />
                     <x-form.input name="sku" label="SKU induk" optional :value="$product->sku" maxlength="64"
                         tip="Kode unik internal produk (Stock Keeping Unit). Dipakai untuk mencari produk di admin dan mencocokkan baris saat impor/update stok massal lewat Excel."
                         :tips="['Buat pola yang konsisten, mis. ALB-MKN-RENDA.', 'Hindari spasi: cukup huruf besar, angka, dan tanda -.', 'Produk bervarian: beri SKU juga di tiap varian supaya stok per warna bisa di-update massal.']" />
@@ -58,7 +58,7 @@
                     <input type="hidden" name="collection_ids" value="">
                     <x-form.select name="collection_ids[]" multiple label="Koleksi" optional :options="$collections"
                         :selected="$product->exists ? $product->collections->modelKeys() : []" placeholder="Pilih satu atau lebih koleksi"
-                        hint="Satu produk bisa masuk beberapa koleksi, mis. mukena travel di Travel & Umrah dan Hadiah Spesial. Kelola koleksi di menu Katalog › Koleksi."
+                        hint="Satu produk bisa masuk beberapa koleksi, mis. Aluna Dress di Busui Friendly dan Motif Bunga. Kelola koleksi di menu Katalog › Koleksi."
                         tip="Koleksi = kelompok tematik lintas kategori. Tampil sebagai ubin “Belanja per koleksi” di beranda dan bisa dipakai sebagai filter katalog."
                         :tips="['Masukkan hanya ke koleksi yang benar-benar relevan supaya halaman koleksi tetap fokus.']" />
                 </div>
@@ -67,7 +67,7 @@
                                  tip="Tampil di halaman produk. Sekitar 155 huruf pertamanya juga dipakai sebagai cuplikan di Google dan saat link dibagikan ke WhatsApp."
                                  :tips="['Buka dengan 1–2 kalimat inti: bahan, keunggulan, untuk siapa.', 'Lanjutkan dengan detail: ukuran (panjang atasan/bawahan), isi paket, cara perawatan.', 'Pakai baris baru per poin supaya mudah dibaca di HP.']" />
                 <x-form.input name="slug" label="Slug URL" optional="kosongkan untuk otomatis" :value="$product->slug"
-                    tip="Bagian akhir alamat halaman produk, mis. /produk/mukena-renda-putih."
+                    tip="Bagian akhir alamat halaman produk, mis. /produk/aluna-dress."
                     :tips="['Biarkan kosong: dibuat otomatis dari nama produk.', 'Hindari mengubah slug produk yang sudah dibagikan atau diiklankan, karena link lama tidak akan bisa dibuka.']" />
             </div>
 
@@ -76,7 +76,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <h2 class="flex items-center gap-1.5 font-bold text-stone-900">Foto produk
                         <x-tip title="Foto produk" text="Foto tampil di dua bentuk: tegak 4:5 berkubah landai di kartu produk (katalog & beranda), dan persegi 1:1 di galeri halaman produk (bisa diperbesar), keranjang, serta checkout."
-                            :tips="['Pakai foto tegak 4:5, ideal 1200×1500 px. Di halaman produk foto dipotong jadi persegi, jadi sisakan ruang ±10% di atas & bawah objek.', 'Objek di tengah; sudut atas kartu melengkung, jadi jangan taruh detail di pojok atas.', 'Foto pertama = sampul: mukena utuh dipakai model atau tertata rapi, latar polos terang.', 'Foto berikutnya: detail renda/bahan, ukuran, isi paket. Kompres di bawah 2 MB (mis. squoosh.app).']" />
+                            :tips="['Pakai foto tegak 4:5, ideal 1200×1500 px. Di halaman produk foto dipotong jadi persegi, jadi sisakan ruang ±10% di atas & bawah objek.', 'Objek di tengah; sudut atas kartu melengkung, jadi jangan taruh detail di pojok atas.', 'Foto pertama = sampul: daster utuh dipakai model atau tergantung rapi, latar polos terang.', 'Foto berikutnya: detail motif/bahan, ukuran, isi paket. Kompres di bawah 2 MB (mis. squoosh.app).']" />
                     </h2>
                     <p class="text-xs text-stone-500">Foto pertama jadi sampul. Maks {{ $formConfig['maxImages'] }} foto, JPG/PNG/WebP 2 MB.</p>
                 </div>

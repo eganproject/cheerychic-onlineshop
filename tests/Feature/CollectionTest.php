@@ -24,7 +24,7 @@ class CollectionTest extends TestCase
                 'name' => 'Running',
                 'tagline' => 'Lari lebih nyaman',
                 'tone' => 'volt',
-                'icon' => 'travel',
+                'icon' => 'busui',
                 'is_active' => '1',
                 'show_on_home' => '1',
                 'products' => [$socks->id, $bottle->id],

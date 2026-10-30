@@ -5,7 +5,7 @@
 
     <div class="mb-6 flex gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-800">
         <x-icon name="info" class="size-5 shrink-0" />
-        <p><b>Kategori</b> = jenis barang (Mukena Dewasa, Mukena Travel, Sajadah), satu per produk. <b>Koleksi</b> = tema atau kebutuhan (Travel & Umrah, Hadiah Spesial), boleh lebih dari satu.
+        <p><b>Kategori</b> = jenis barang (Daster & Dress, One Set), satu per produk. <b>Koleksi</b> = tema atau kebutuhan (Busui Friendly, Motif Bunga), boleh lebih dari satu.
             Koleksi yang aktif & "tampil di beranda" mengisi ubin <i>Belanja per koleksi</i>; bila belum ada, beranda memakai kategori.</p>
     </div>
 
@@ -18,7 +18,7 @@
         </form>
 
         @if ($collections->isEmpty())
-            <x-empty-state icon="swatch" :title="$search ? 'Koleksi tidak ditemukan' : 'Belum ada koleksi'" description="Buat koleksi pertama, misalnya Travel & Umrah, lalu pilih mukena yang ringkas dibawa bepergian.">
+            <x-empty-state icon="swatch" :title="$search ? 'Koleksi tidak ditemukan' : 'Belum ada koleksi'" description="Buat koleksi pertama, misalnya Busui Friendly, lalu pilih daster yang nyaman untuk menyusui.">
                 <a href="{{ route('admin.collections.create') }}" class="btn btn-primary">Tambah koleksi</a>
             </x-empty-state>
         @else

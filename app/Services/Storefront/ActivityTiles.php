@@ -31,6 +31,7 @@ class ActivityTiles
      */
     public function forHome(): array
     {
+        $this->usedCovers = [];
         $source = config('shop.storefront.activities_source', 'auto');
 
         if ($source !== 'categories') {
@@ -106,9 +107,21 @@ class ActivityTiles
             ]);
     }
 
-    /** Foto produk terbaru sebagai sampul ubin yang belum punya gambar sendiri. */
+    /** @var list<int> produk yang sudah jadi sampul ubin lain (supaya ubin tidak berfoto sama). */
+    private array $usedCovers = [];
+
+    /** Foto produk terbaru sebagai sampul ubin yang belum punya gambar sendiri; utamakan yang belum dipakai ubin lain. */
     private function cover(\Illuminate\Database\Eloquent\Builder $products): ?string
     {
-        return $products->whereHas('coverImage')->latest()->first()?->imageUrl();
+        $products->whereHas('coverImage')->latest();
+        $product = (clone $products)->whereKeyNot($this->usedCovers)->first() ?? $products->first();
+
+        if (! $product) {
+            return null;
+        }
+
+        $this->usedCovers[] = $product->id;
+
+        return $product->imageUrl();
     }
 }

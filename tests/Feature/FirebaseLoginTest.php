@@ -16,7 +16,7 @@ class FirebaseLoginTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const PROJECT = 'albaniah-test';
+    private const PROJECT = 'cheerychic-test';
 
     private string $privateKey = '';
 

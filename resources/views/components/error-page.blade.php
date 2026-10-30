@@ -17,7 +17,7 @@
                 <div class="relative order-last lg:order-first" aria-hidden="true">
                     <x-logo variant="mark" mono class="absolute -top-6 left-[38%] h-24 text-brand-200 sm:h-32" />
                     <p class="relative font-display text-[8rem] leading-none font-semibold tracking-[-0.02em] text-sand-300 sm:text-[12rem]">{{ $code }}</p>
-                    <div class="ornament-divider mt-2 max-w-72"><span class="size-2 rotate-45 bg-brand-400"></span></div>
+                    <div class="ornament-divider mt-2 max-w-72"><span class="flower-dot text-brand-400"></span></div>
                 </div>
                 <div>
                     <p class="kicker">Error {{ $code }}</p>

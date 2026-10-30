@@ -1,13 +1,13 @@
-# Contoh server block Nginx untuk Albaniah Online Shop (VPS).
-# Salin ke /etc/nginx/sites-available/albaniah, sesuaikan domain & path,
-# lalu: ln -s /etc/nginx/sites-available/albaniah /etc/nginx/sites-enabled/
-# SSL gratis: sudo certbot --nginx -d albaniah.id -d www.albaniah.id
+# Contoh server block Nginx untuk Cheery Chic Online Shop (VPS).
+# Salin ke /etc/nginx/sites-available/cheerychic, sesuaikan domain & path,
+# lalu: ln -s /etc/nginx/sites-available/cheerychic /etc/nginx/sites-enabled/
+# SSL gratis: sudo certbot --nginx -d cheerychic.id -d www.cheerychic.id
 
 server {
     listen 80;
     listen [::]:80;
-    server_name albaniah.id www.albaniah.id;
-    root /var/www/albaniah-onlineshop/public;
+    server_name cheerychic.id www.cheerychic.id;
+    root /var/www/cheerychic-onlineshop/public;
 
     index index.php;
     charset utf-8;

@@ -42,7 +42,7 @@ class AdminPanelTest extends TestCase
             route('admin.categories.create'),
             route('admin.categories.edit', $product->category),
             route('admin.orders.index'),
-            route('admin.orders.index', ['status' => 'paid', 'q' => 'Albaniah']),
+            route('admin.orders.index', ['status' => 'paid', 'q' => 'Cheery Chic']),
             route('admin.orders.show', $order),
             route('admin.customers.index'),
             route('admin.customers.show', $order->user),
