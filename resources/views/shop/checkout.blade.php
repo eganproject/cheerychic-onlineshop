@@ -173,8 +173,9 @@
                                 <div class="min-w-0 flex-1 text-sm">
                                     <p class="truncate font-medium text-stone-800">{{ $line->product->name }}</p>
                                     @if ($line->variant)<p class="truncate text-xs text-stone-500">{{ $line->variant->name }}</p>@endif
-                                    <p class="text-xs text-stone-500">{{ $line->quantity }} × @rupiah($line->unitPrice())</p>
+                                    <p class="text-xs text-stone-500">{{ $line->quantity }} × @rupiah($line->unitPrice())@if ($line->isWholesale()) <span class="text-stone-400 line-through">@rupiah($line->regularPrice())</span>@endif</p>
                                     @if ($line->isPreorder())<x-preorder-badge :days="$line->preorderDays()" class="mt-1" />@endif
+                                    @if ($line->isWholesale())<x-wholesale-badge class="mt-1" />@endif
                                 </div>
                                 <p class="text-sm font-semibold">@rupiah($line->subtotal())</p>
                             </li>

@@ -16,6 +16,7 @@
     </x-empty-state>
 @else
     <div class="mt-2 grid gap-10 lg:grid-cols-12 lg:gap-14">
+        @php($wholesaleHinted = [])
         <ul class="divide-y divide-stone-200 lg:col-span-8">
             @foreach ($lines as $line)
                 <li class="flex gap-4 py-6 transition-opacity aria-busy:pointer-events-none aria-busy:opacity-50 sm:gap-6" data-cart-item>
@@ -36,6 +37,9 @@
                                 @if ($line->isPreorder())
                                     <x-preorder-badge :days="$line->preorderDays()" class="mt-1.5" />
                                 @endif
+                                @if ($line->isWholesale())
+                                    <x-wholesale-badge class="mt-1.5" />
+                                @endif
                                 <p class="mt-1 text-sm text-stone-500">
                                     @rupiah($line->unitPrice())
                                     @if ($line->compareAtPrice() > $line->unitPrice())<span class="ml-1 text-xs text-stone-400 line-through">@rupiah($line->compareAtPrice())</span>@endif
@@ -43,6 +47,14 @@
                             </div>
                             <p class="shrink-0 font-semibold">@rupiah($line->subtotal())</p>
                         </div>
+                        {{-- Ajakan menambah jumlah untuk tingkat grosir berikutnya (sekali per produk). --}}
+                        @if (($next = $line->nextWholesaleTier()) && ! in_array($line->product->id, $wholesaleHinted, true))
+                            @php($wholesaleHinted[] = $line->product->id)
+                            <p class="mt-2 flex items-start gap-1.5 rounded-xl bg-brand-50 px-3 py-2 text-xs text-brand-800">
+                                <x-icon name="tag" class="mt-px size-3.5 shrink-0" />
+                                <span>Tambah <strong>{{ $next['missing'] }} pcs</strong> lagi{{ $line->product->has_variants ? ' (motif boleh campur)' : '' }} untuk harga grosir <strong>@rupiah($next['price'])</strong>/pcs.</span>
+                            </p>
+                        @endif
                         <div class="mt-auto flex items-center justify-between pt-4">
                             <div class="flex items-center gap-3">
                             <form method="POST" action="{{ route('cart.update', $line->key()) }}" data-cart-line data-quantity="{{ $line->quantity }}" data-max="{{ $line->availableStock() }}" class="inline-flex items-center rounded-full border border-stone-200">
@@ -72,6 +84,9 @@
                 <h2 class="text-lg font-semibold tracking-tight">Ringkasan</h2>
                 <dl class="mt-5 space-y-3 text-sm">
                     <div class="flex justify-between"><dt class="text-stone-500">Subtotal</dt><dd class="font-semibold">@rupiah($subtotal)</dd></div>
+                    @if ($wholesaleSavings = $lines->sum(fn ($line) => $line->wholesaleSavings()))
+                        <div class="flex justify-between"><dt class="text-stone-500">Hemat harga grosir</dt><dd class="font-semibold text-brand-700">@rupiah($wholesaleSavings)</dd></div>
+                    @endif
                     <div class="flex justify-between"><dt class="text-stone-500">Berat total</dt><dd class="text-stone-700">{{ number_format(max($weight, 1) / 1000, 2, ',', '.') }} kg</dd></div>
                     <div class="flex justify-between"><dt class="text-stone-500">Ongkir</dt><dd class="text-stone-500">Dihitung saat checkout</dd></div>
                 </dl>

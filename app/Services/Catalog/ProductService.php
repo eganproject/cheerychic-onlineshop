@@ -35,6 +35,8 @@ class ProductService
             $product->is_preorder = (bool) ($data['is_preorder'] ?? false);
             $product->preorder_days = $product->is_preorder ? (int) $data['preorder_days'] : null;
             $product->preorder_note = $product->is_preorder ? (($data['preorder_note'] ?? null) ?: null) : null;
+            // Form selalu memuat kartu harga grosir; tanpa baris = harga grosir dimatikan.
+            $product->wholesale_prices = self::normalizeWholesale($data['wholesale_prices'] ?? []);
             $product->variant_label = $hasVariants ? ($data['variant_label'] ?? null) : null;
 
             if ($hasVariants) {
@@ -163,6 +165,24 @@ class ProductService
 
         $type = $product->wasRecentlyCreated ? StockMovementType::Initial : StockMovementType::Adjustment;
         $this->stock->set($product, null, $stock, $type, $type === StockMovementType::Adjustment ? self::FORM_NOTE : null);
+    }
+
+    /**
+     * Rapikan tingkat grosir: urut naik, tanpa duplikat; null bila kosong.
+     *
+     * @return list<array{min_quantity: int, price: int}>|null
+     */
+    public static function normalizeWholesale(?array $tiers): ?array
+    {
+        $tiers = collect($tiers ?? [])
+            ->filter(fn ($t) => is_array($t) && (int) ($t['min_quantity'] ?? 0) > 1 && (int) ($t['price'] ?? 0) > 0)
+            ->map(fn ($t) => ['min_quantity' => (int) $t['min_quantity'], 'price' => (int) $t['price']])
+            ->unique('min_quantity')
+            ->sortBy('min_quantity')
+            ->values()
+            ->all();
+
+        return $tiers === [] ? null : $tiers;
     }
 
     public function uniqueSlug(string $name, Product $ignore): string

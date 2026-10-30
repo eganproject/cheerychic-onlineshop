@@ -67,6 +67,57 @@ class CellValue
         return $number;
     }
 
+    /**
+     * Harga grosir: "6=85000; 12=80000" (minimal pcs = harga per pcs, pisahkan dengan ; atau |).
+     * Kosong = null (tidak berubah), "0" atau "-" = [] (hapus harga grosir).
+     *
+     * @return list<array{min_quantity: int, price: int}>|null
+     */
+    public static function wholesale(mixed $value, int $maxTiers): ?array
+    {
+        $text = trim((string) $value);
+
+        if ($value === null || $text === '') {
+            return null;
+        }
+
+        if ($text === '0' || $text === '-') {
+            return [];
+        }
+
+        $tiers = [];
+        foreach (preg_split('/\s*[;|\n]\s*/', $text, -1, PREG_SPLIT_NO_EMPTY) as $part) {
+            if (! preg_match('/^(\d+)\s*(?:pcs)?\s*[=:]\s*(.+)$/i', $part, $m)) {
+                throw new InvalidCell("Harga grosir \"{$part}\" tidak dikenali. Format: 6=85000; 12=80000.");
+            }
+
+            $min = (int) $m[1];
+            if ($min < 2 || $min > 9999) {
+                throw new InvalidCell('Minimal beli grosir harus antara 2 dan 9.999 pcs.');
+            }
+            if (isset($tiers[$min])) {
+                throw new InvalidCell("Minimal beli grosir {$min} pcs ditulis dua kali.");
+            }
+
+            $tiers[$min] = self::integer($m[2], "Harga grosir {$min} pcs", 1, 1_000_000_000_000);
+        }
+
+        if (count($tiers) > $maxTiers) {
+            throw new InvalidCell("Harga grosir maksimal {$maxTiers} tingkat.");
+        }
+
+        ksort($tiers);
+        $previous = null;
+        foreach ($tiers as $price) {
+            if ($previous !== null && $price >= $previous) {
+                throw new InvalidCell('Harga grosir harus makin murah untuk jumlah yang lebih banyak.');
+            }
+            $previous = $price;
+        }
+
+        return array_map(fn ($min, $price) => ['min_quantity' => $min, 'price' => $price], array_keys($tiers), $tiers);
+    }
+
     public static function boolean(mixed $value, string $label): ?bool
     {
         if ($value === null || $value === '') {

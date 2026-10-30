@@ -2,7 +2,7 @@
 | Produk | Jml | Subtotal |
 |:-------|:---:|---------:|
 @foreach ($items as $item)
-| {{ $item->product_name }}@if ($item->variant_name) ({{ $item->variant_name }})@endif @if ($item->is_preorder)<br>*Pre Order ±{{ $item->preorder_days }} hari*@endif | {{ $item->quantity }} | @rupiah($item->subtotal) |
+| {{ $item->product_name }}@if ($item->variant_name) ({{ $item->variant_name }})@endif @if ($item->is_preorder)<br>*Pre Order ±{{ $item->preorder_days }} hari*@endif @if ($item->isWholesale())<br>*Harga grosir @rupiah($item->price)/pcs*@endif | {{ $item->quantity }} | @rupiah($item->subtotal) |
 @endforeach
 | Ongkir{{ $order->courierLabel() ? ' · '.$order->courierLabel() : '' }} | | @rupiah($order->shipping_cost) |
 @if ($order->discount > 0)

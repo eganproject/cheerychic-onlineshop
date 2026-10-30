@@ -16,6 +16,8 @@
         'id' => null, 'name' => '', 'sku' => '', 'price' => '', 'compare_at_price' => '', 'stock' => 0,
         'stock_original' => null, 'weight' => '', 'image_id' => '', 'is_active' => false,
     ], $v, ['is_active' => (bool) ($v['is_active'] ?? false), 'image_id' => (string) ($v['image_id'] ?? '')]))->values();
+    $wholesaleRows = collect(old('wholesale_prices', $product->wholesaleTiers()))
+        ->map(fn ($t) => ['min_quantity' => $t['min_quantity'] ?? '', 'price' => $t['price'] ?? ''])->values();
     $formConfig = [
         'hasVariants' => (bool) old('has_variants', $product->has_variants),
         'images' => $product->images->map(fn ($i) => ['id' => $i->id, 'url' => $i->url(), 'removed' => false])->values(),
@@ -241,6 +243,44 @@
                     </div>
                     <p class="text-xs text-stone-400">Foto varian dipilih dari foto yang sudah tersimpan. Harga produk di katalog otomatis memakai varian aktif termurah.</p>
                 </div>
+            </div>
+
+            {{-- Harga grosir --}}
+            <div class="card p-6" x-data="{ tiers: @js($wholesaleRows), max: {{ \App\Models\Product::WHOLESALE_MAX_TIERS }} }">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 class="flex items-center gap-1.5 font-bold text-stone-900">Harga grosir
+                            <x-tip title="Harga grosir" text="Harga per pcs yang lebih murah saat pembeli membeli banyak. Berlaku untuk semua pembeli, otomatis di keranjang dan checkout begitu jumlahnya tercapai."
+                                :tips="['Jumlah dihitung dari total semua varian/motif produk ini di keranjang (boleh campur), tidak digabung dengan produk lain.', 'Harga grosir berlaku untuk semua varian. Varian yang harga normalnya sudah lebih murah tetap memakai harganya sendiri.', 'Produk Pre Order juga mendapat harga grosir. Voucher tetap bisa dipakai di atas harga grosir.', 'Kosongkan semua baris untuk mematikan harga grosir.']" />
+                        </h2>
+                        <p class="text-xs text-stone-500">Opsional. Contoh: min. 6 pcs Rp85.000, min. 12 pcs Rp80.000.</p>
+                    </div>
+                    <button type="button" x-show="tiers.length < max" @click="tiers.push({ min_quantity: (parseInt(tiers.at(-1)?.min_quantity, 10) || 0) + 6, price: '' })"
+                            class="btn btn-secondary btn-sm"><x-icon name="plus" class="size-4" /> Tambah tingkat</button>
+                </div>
+                <div x-show="tiers.length" x-cloak class="mt-5 space-y-3">
+                    <template x-for="(tier, index) in tiers" :key="index">
+                        <div class="flex items-end gap-3">
+                            <label class="block w-36 shrink-0">
+                                <span class="label" x-show="index === 0">Minimal beli</span>
+                                <div class="relative">
+                                    <input type="number" min="2" max="9999" required x-bind:name="`wholesale_prices[${index}][min_quantity]`" x-model="tier.min_quantity" class="input pr-12 tabular-nums">
+                                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-stone-400">pcs</span>
+                                </div>
+                            </label>
+                            <label class="block min-w-0 flex-1">
+                                <span class="label" x-show="index === 0">Harga per pcs</span>
+                                <div class="relative"><span class="input-addon left-3">Rp</span><input x-bind:name="`wholesale_prices[${index}][price]`" x-model="tier.price" x-money required class="input pl-9 tabular-nums"></div>
+                            </label>
+                            <button type="button" @click="tiers.splice(index, 1)" class="btn btn-ghost btn-sm mb-1 text-rose-600 hover:bg-rose-50" title="Hapus tingkat"><x-icon name="trash" class="size-4" /></button>
+                        </div>
+                    </template>
+                </div>
+                <p x-show="!tiers.length" class="mt-4 rounded-xl border border-dashed border-stone-200 p-4 text-center text-sm text-stone-500">Belum ada harga grosir. Produk dijual dengan harga normal berapa pun jumlahnya.</p>
+                <x-input-error for="wholesale_prices" />
+                @foreach ($errors->get('wholesale_prices.*') as $messages)
+                    <p class="mt-1 text-xs font-medium text-rose-600">{{ $messages[0] }}</p>
+                @endforeach
             </div>
         </div>
 

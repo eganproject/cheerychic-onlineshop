@@ -32,7 +32,9 @@
             'price' => $product->price,
             'compareAt' => $product->compare_at_price,
             'stock' => $product->purchasableQuantity(),
+            'tiers' => $product->wholesaleTiers(),
         ];
+        $tiers = $product->wholesaleTiers();
         $priceRange = $variants->isNotEmpty() && $variants->pluck('price')->unique()->count() > 1;
         $lowStock = config('shop.low_stock_threshold');
         $sportFor = $product->category ? $product->category->name.' '.($product->category->parent?->name) : $product->name;
@@ -158,9 +160,38 @@
                                 <span x-text="rupiah(price)">@rupiah($product->price)</span>
                             </p>
                             <p x-show="compareAt" @unless ($product->isOnSale()) x-cloak @endunless class="text-base text-stone-400 line-through" x-text="rupiah(compareAt)">@rupiah($product->compare_at_price)</p>
-                            <span x-show="compareAt" @unless ($product->isOnSale()) x-cloak @endunless class="text-sm font-medium text-accent-600"
-                                  x-text="`Hemat ${rupiah(compareAt - price)}`"></span>
+                            <span x-show="compareAt" @unless ($product->isOnSale()) x-cloak @endunless class="text-sm font-medium" :class="wholesale ? 'text-brand-700' : 'text-accent-600'"
+                                  x-text="wholesale ? `Harga grosir · hemat ${rupiah(compareAt - price)}/pcs` : `Hemat ${rupiah(compareAt - price)}`"></span>
                         </div>
+
+                        @if ($tiers)
+                            {{-- Harga grosir bertingkat, berlaku untuk semua pembeli. --}}
+                            <div class="mt-4 rounded-2xl border border-brand-200 bg-brand-50/70 p-4 text-sm">
+                                <p class="flex items-center gap-2 font-semibold text-brand-800">
+                                    <x-icon name="tag" class="size-4" /> Harga grosir
+                                </p>
+                                <p class="mt-0.5 text-xs text-stone-600">
+                                    Makin banyak makin hemat.@if ($variants->count() > 1) Jumlah dihitung dari total semua {{ mb_strtolower($product->variant_label ?: 'varian') }} produk ini di keranjang, boleh campur.@endif
+                                </p>
+                                <ul class="mt-3 grid gap-1.5" role="list">
+                                    <li class="flex items-center justify-between rounded-xl px-3 py-2 text-stone-600" :class="!tier && 'bg-white font-semibold text-ink ring-1 ring-brand-300'">
+                                        <span>1–{{ $tiers[0]['min_quantity'] - 1 }} pcs</span>
+                                        <span>@if ($priceRange)Harga normal @else @rupiah($product->price)@endif</span>
+                                    </li>
+                                    @foreach ($tiers as $i => $tier)
+                                        @php($upper = isset($tiers[$i + 1]) ? '–'.($tiers[$i + 1]['min_quantity'] - 1) : '+')
+                                        <li>
+                                            <button type="button" @click="useTier(@js($tier))"
+                                                    :class="tier && tier.min_quantity === {{ $tier['min_quantity'] }} ? 'bg-white font-semibold text-ink ring-1 ring-brand-300' : 'text-stone-700 hover:bg-white/70'"
+                                                    class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition">
+                                                <span>{{ $tier['min_quantity'] }}{{ $upper }} pcs</span>
+                                                <span class="font-semibold text-brand-800">@rupiah($tier['price'])<span class="font-normal text-stone-500">/pcs</span></span>
+                                            </button>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
                         @if ($preorder)
                             {{-- Pre Order: bisa dipesan tanpa batas stok. --}}
@@ -296,6 +327,10 @@
                                         @endif
                                         @if ($variants->isNotEmpty())
                                             <dt class="{{ $row }} font-medium text-ink max-sm:border-0 max-sm:pb-0">{{ $product->variant_label ?: 'Varian' }}</dt><dd class="{{ $row }}">{{ $variants->pluck('name')->join(', ') }}</dd>
+                                        @endif
+                                        @if ($tiers)
+                                            <dt class="{{ $row }} font-medium text-ink max-sm:border-0 max-sm:pb-0">Harga grosir</dt>
+                                            <dd class="{{ $row }}">{{ collect($tiers)->map(fn ($t) => 'min. '.$t['min_quantity'].' pcs '.\App\Support\Money::rupiah($t['price']))->join(' · ') }}</dd>
                                         @endif
                                         @if ($preorder)
                                             <dt class="{{ $row }} font-medium text-ink max-sm:border-0 max-sm:pb-0">Pre Order</dt><dd class="{{ $row }}">{{ $product->preorderSummary() }}</dd>

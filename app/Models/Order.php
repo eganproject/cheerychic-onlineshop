@@ -197,6 +197,24 @@ class Order extends Model
     }
 
     /** Apakah pesanan berisi produk Pre Order (butuh item dimuat). */
+    /** Ada baris yang mendapat harga grosir. */
+    public function hasWholesale(): bool
+    {
+        return $this->items->contains(fn (OrderItem $item) => $item->isWholesale());
+    }
+
+    /** Total hemat dari harga grosir di pesanan ini. */
+    public function wholesaleSavings(): int
+    {
+        return (int) $this->items->sum(fn (OrderItem $item) => $item->wholesaleSavings());
+    }
+
+    #[Scope]
+    protected function withWholesale(Builder $query): void
+    {
+        $query->whereHas('items', fn (Builder $q) => $q->whereNotNull('retail_price')->whereColumn('retail_price', '>', 'price'));
+    }
+
     public function hasPreorder(): bool
     {
         return $this->items->contains(fn (OrderItem $item) => $item->isPreorder());
