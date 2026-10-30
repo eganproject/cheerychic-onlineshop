@@ -51,6 +51,8 @@ class CheckoutService
             $subtotal = 0;
             $weight = 0;
             $items = [];
+            // Harga grosir dihitung ulang dari data produk terkunci, per total jumlah produk.
+            $perProduct = CartService::quantitiesPerProduct($lines->map(fn ($line) => [$line->product->id, $line->quantity]));
 
             foreach ($lines as $line) {
                 $product = $products->get($line->product->id);
@@ -68,7 +70,8 @@ class CheckoutService
                     ]);
                 }
 
-                $price = $variant?->price ?? $product->price;
+                $regularPrice = $variant?->price ?? $product->price;
+                $price = $product->unitPriceFor($regularPrice, $perProduct[$product->id]);
                 $unitWeight = $variant?->weight ?: $product->weight;
                 $lineSubtotal = $price * $line->quantity;
                 $subtotal += $lineSubtotal;
@@ -85,6 +88,7 @@ class CheckoutService
                         'variant_name' => $variant?->name,
                         'sku' => $variant?->sku ?: $product->sku,
                         'price' => $price,
+                        'retail_price' => $price < $regularPrice ? $regularPrice : null,
                         'quantity' => $line->quantity,
                         'weight' => $unitWeight,
                         'subtotal' => $lineSubtotal,

@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 #[Fillable([
-    'category_id', 'name', 'slug', 'sku', 'description', 'price', 'compare_at_price',
+    'category_id', 'name', 'slug', 'sku', 'description', 'price', 'compare_at_price', 'wholesale_prices',
     'weight', 'variant_label', 'is_active', 'is_featured',
     'is_preorder', 'preorder_days', 'preorder_note',
 ])]
@@ -25,6 +25,9 @@ class Product extends Model
 
     /** Batas jumlah per baris keranjang untuk produk Pre Order (PO tidak dibatasi stok). */
     public const PREORDER_MAX_QTY = 99;
+
+    /** Batas jumlah tingkat harga grosir per produk. */
+    public const WHOLESALE_MAX_TIERS = 5;
 
     // `stock`, `has_variants`, `rating_avg`, `review_count` sengaja tidak mass-assignable. Stok diubah lewat
     // StockService (tercatat di riwayat), ringkasan varian lewat syncVariantSummary(),
@@ -38,6 +41,7 @@ class Product extends Model
         return [
             'price' => 'integer',
             'compare_at_price' => 'integer',
+            'wholesale_prices' => 'array',
             'stock' => 'integer',
             'weight' => 'integer',
             'is_active' => 'boolean',
@@ -125,6 +129,14 @@ class Product extends Model
     protected function available(Builder $query): void
     {
         $query->where(fn (Builder $q) => $q->where('stock', '>', 0)->orWhere('is_preorder', true));
+    }
+
+    /** Punya harga grosir (minimal satu tingkat). */
+    #[Scope]
+    protected function wholesale(Builder $query): void
+    {
+        // Disimpan null bila tidak ada tingkat (lihat ProductService), jadi cukup cek null.
+        $query->whereNotNull('wholesale_prices');
     }
 
     #[Scope]
@@ -245,6 +257,64 @@ class Product extends Model
     public static function preorderText(int $days): string
     {
         return 'Dikirim ±'.$days.' hari setelah pembayaran';
+    }
+
+    /**
+     * Tingkat harga grosir, urut dari jumlah terkecil. Berlaku untuk semua pembeli;
+     * jumlah dihitung dari total semua varian produk ini di keranjang.
+     *
+     * @return list<array{min_quantity: int, price: int}>
+     */
+    public function wholesaleTiers(): array
+    {
+        return collect($this->wholesale_prices ?? [])
+            ->filter(fn ($tier) => is_array($tier) && (int) ($tier['min_quantity'] ?? 0) > 1 && isset($tier['price']))
+            ->map(fn ($tier) => ['min_quantity' => (int) $tier['min_quantity'], 'price' => (int) $tier['price']])
+            ->sortBy('min_quantity')
+            ->values()
+            ->all();
+    }
+
+    public function hasWholesale(): bool
+    {
+        return $this->wholesaleTiers() !== [];
+    }
+
+    /** Jumlah minimal untuk mulai mendapat harga grosir. */
+    public function wholesaleMinQuantity(): ?int
+    {
+        return $this->wholesaleTiers()[0]['min_quantity'] ?? null;
+    }
+
+    /** Harga grosir termurah (tingkat tertinggi), untuk label "Grosir mulai ...". */
+    public function lowestWholesalePrice(): ?int
+    {
+        $tiers = $this->wholesaleTiers();
+
+        return $tiers === [] ? null : min(array_column($tiers, 'price'));
+    }
+
+    /** Tingkat grosir yang berlaku untuk jumlah ini, atau null bila belum mencapai minimal. */
+    public function wholesaleTierFor(int $quantity): ?array
+    {
+        return collect($this->wholesaleTiers())->last(fn ($tier) => $quantity >= $tier['min_quantity']);
+    }
+
+    /** Tingkat grosir berikutnya yang belum tercapai pada jumlah ini. */
+    public function nextWholesaleTier(int $quantity): ?array
+    {
+        return collect($this->wholesaleTiers())->first(fn ($tier) => $quantity < $tier['min_quantity']);
+    }
+
+    /**
+     * Harga satuan setelah grosir. Harga grosir tidak pernah menaikkan harga,
+     * jadi varian yang lebih murah dari harga grosir tetap memakai harganya sendiri.
+     */
+    public function unitPriceFor(int $regularPrice, int $quantity): int
+    {
+        $tier = $this->wholesaleTierFor($quantity);
+
+        return $tier ? min($regularPrice, $tier['price']) : $regularPrice;
     }
 
     public function hasReviews(): bool

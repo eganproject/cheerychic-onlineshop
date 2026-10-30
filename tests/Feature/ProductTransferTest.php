@@ -73,7 +73,7 @@ class ProductTransferTest extends TestCase
         return array_values(iterator_to_array(Spreadsheet::read($path, $format)));
     }
 
-    private const HEADER = ['slug', 'nama_produk', 'kategori', 'deskripsi', 'sku_produk', 'aktif', 'unggulan', 'label_varian', 'nama_varian', 'sku_varian', 'varian_aktif', 'harga', 'harga_coret', 'berat_gram', 'stok', 'url_gambar', 'pre_order_hari'];
+    private const HEADER = ['slug', 'nama_produk', 'kategori', 'deskripsi', 'sku_produk', 'aktif', 'unggulan', 'label_varian', 'nama_varian', 'sku_varian', 'varian_aktif', 'harga', 'harga_coret', 'berat_gram', 'stok', 'url_gambar', 'pre_order_hari', 'harga_grosir'];
 
     private function row(array $values): array
     {

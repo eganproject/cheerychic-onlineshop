@@ -37,6 +37,13 @@ class ProductRequest extends FormRequest
                 ->all();
         }
 
+        if (is_array($this->input('wholesale_prices'))) {
+            $merge['wholesale_prices'] = collect($this->input('wholesale_prices'))
+                ->map(fn ($t) => is_array($t) ? array_merge($t, ['price' => $digits($t['price'] ?? null)]) : $t)
+                ->values()
+                ->all();
+        }
+
         $this->merge($merge);
     }
 
@@ -59,6 +66,11 @@ class ProductRequest extends FormRequest
             'preorder_days' => ['exclude_unless:is_preorder,1', 'required', 'integer', 'min:1', 'max:180'],
             'preorder_note' => ['exclude_unless:is_preorder,1', 'nullable', 'string', 'max:160'],
             'has_variants' => ['sometimes', 'boolean'],
+
+            // Harga grosir bertingkat (opsional).
+            'wholesale_prices' => ['nullable', 'array', 'max:'.Product::WHOLESALE_MAX_TIERS],
+            'wholesale_prices.*.min_quantity' => ['required', 'integer', 'min:2', 'max:9999', 'distinct'],
+            'wholesale_prices.*.price' => ['required', 'integer', 'min:1'],
 
             // Tanpa varian: harga & stok di level produk.
             'price' => ['exclude_if:has_variants,1', 'required', 'integer', 'min:0'],
@@ -105,6 +117,8 @@ class ProductRequest extends FormRequest
                 $validator->errors()->add('images', 'Maksimal '.self::MAX_IMAGES.' foto per produk.');
             }
 
+            $this->validateWholesale($validator);
+
             foreach ($this->boolean('has_variants') ? $this->input('variants', []) : [] as $i => $variant) {
                 $id = $variant['id'] ?? null;
 
@@ -118,6 +132,39 @@ class ProductRequest extends FormRequest
                 }
             }
         }];
+    }
+
+    /** Tingkat grosir: makin banyak makin murah, dan lebih murah dari harga normal termurah. */
+    private function validateWholesale(Validator $validator): void
+    {
+        $tiers = collect($this->input('wholesale_prices', []))->sortBy('min_quantity')->values();
+
+        if ($tiers->isEmpty()) {
+            return;
+        }
+
+        $regular = $this->boolean('has_variants')
+            ? (int) collect($this->input('variants', []))->filter(fn ($v) => ! empty($v['is_active']))->max('price')
+            : (int) $this->input('price');
+
+        $previous = null;
+        foreach ($tiers as $tier) {
+            $price = (int) $tier['price'];
+
+            if ($regular > 0 && $price >= $regular) {
+                $validator->errors()->add('wholesale_prices', "Harga grosir min. {$tier['min_quantity']} pcs harus lebih murah dari harga normal.");
+
+                return;
+            }
+
+            if ($previous !== null && $price >= $previous) {
+                $validator->errors()->add('wholesale_prices', 'Harga grosir harus makin murah untuk jumlah yang lebih banyak.');
+
+                return;
+            }
+
+            $previous = $price;
+        }
     }
 
     public function attributes(): array
@@ -135,6 +182,9 @@ class ProductRequest extends FormRequest
             'preorder_days' => 'lama proses pre order',
             'preorder_note' => 'catatan pre order',
             'variant_label' => 'judul varian',
+            'wholesale_prices' => 'harga grosir',
+            'wholesale_prices.*.min_quantity' => 'minimal beli grosir',
+            'wholesale_prices.*.price' => 'harga grosir',
             'variants' => 'varian',
             'variants.*.name' => 'nama varian',
             'variants.*.sku' => 'SKU varian',
@@ -153,6 +203,7 @@ class ProductRequest extends FormRequest
             'variants.required' => 'Tambahkan minimal satu varian, atau matikan opsi varian.',
             'variants.*.name.distinct' => 'Nama varian tidak boleh sama.',
             'variants.*.sku.distinct' => 'SKU varian tidak boleh sama.',
+            'wholesale_prices.*.min_quantity.distinct' => 'Minimal beli grosir tidak boleh sama di dua tingkat.',
         ];
     }
 }

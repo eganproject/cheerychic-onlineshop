@@ -1,6 +1,7 @@
 /**
  * Halaman detail produk: galeri foto + pemilih varian. Memilih varian
  * mengganti harga, stok, dan foto (bila varian punya foto sendiri).
+ * Harga grosir (tiers) ikut berlaku begitu jumlah mencapai tingkatnya.
  */
 export default (config) => ({
     images: config.images, // [{ id, url }]
@@ -8,6 +9,7 @@ export default (config) => ({
     variants: config.variants, // [{ id, name, price, compare_at_price, stock, image_id }]
     selectedId: config.selectedId ?? null,
     qty: 1,
+    tiers: config.tiers ?? [], // [{ min_quantity, price }] urut naik
 
     get selected() {
         return this.variants.find((variant) => variant.id === this.selectedId) ?? null;
@@ -21,13 +23,33 @@ export default (config) => ({
         return Math.max(1, this.stock);
     },
 
-    get price() {
+    get regularPrice() {
         return this.selected ? this.selected.price : config.price;
     },
 
+    /** Tingkat grosir yang berlaku untuk jumlah saat ini (null bila belum mencapai minimal). */
+    get tier() {
+        const qty = parseInt(this.qty, 10) || 1;
+        return [...this.tiers].reverse().find((tier) => qty >= tier.min_quantity) ?? null;
+    },
+
+    get price() {
+        return this.tier ? Math.min(this.regularPrice, this.tier.price) : this.regularPrice;
+    },
+
+    get wholesale() {
+        return this.price < this.regularPrice;
+    },
+
     get compareAt() {
+        if (this.wholesale) return this.regularPrice;
         const compare = this.selected ? this.selected.compare_at_price : config.compareAt;
         return compare && compare > this.price ? compare : null;
+    },
+
+    /** Pilih tingkat grosir dari tabel: isi jumlah dengan minimalnya. */
+    useTier(tier) {
+        this.qty = Math.min(this.max, tier.min_quantity);
     },
 
     get discount() {

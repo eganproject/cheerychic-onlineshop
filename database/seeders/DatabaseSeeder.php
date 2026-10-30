@@ -220,7 +220,7 @@ class DatabaseSeeder extends Seeder
         }
     }
 
-    /** @param  array{price: int, compare: ?int, weight: int, featured: bool, sku: string, text: string, size: string, variants?: array{0: string, 1: list<array{0: string, 1: ?int}>}, preorder?: array{0: int, 1: ?string}}  $data */
+    /** @param  array{price: int, compare: ?int, weight: int, featured: bool, sku: string, text: string, size: string, variants?: array{0: string, 1: list<array{0: string, 1: ?int}>}, preorder?: array{0: int, 1: ?string}, wholesale?: list<array{0: int, 1: int}>}  $data */
     private function seedProduct(Category $category, string $name, array $data): void
     {
         $product = Product::updateOrCreate(['slug' => Str::slug($name)], [
@@ -242,6 +242,11 @@ class DatabaseSeeder extends Seeder
         // Contoh produk Pre Order (stok = kuota PO).
         if ($preorder = $data['preorder'] ?? null) {
             $product->update(['is_preorder' => true, 'preorder_days' => $preorder[0], 'preorder_note' => $preorder[1]]);
+        }
+
+        // Contoh harga grosir: [minimal pcs, harga per pcs].
+        if ($wholesale = $data['wholesale'] ?? null) {
+            $product->update(['wholesale_prices' => array_map(fn ($t) => ['min_quantity' => $t[0], 'price' => $t[1]], $wholesale)]);
         }
 
         // Foto contoh bawaan di public/images/demo/products (urutan = urutan varian motif);
@@ -288,6 +293,7 @@ class DatabaseSeeder extends Seeder
     private const PRODUCTS = [
         'Aluna Dress' => [
             'price' => 84000, 'compare' => 99000, 'weight' => 300, 'featured' => true, 'sku' => 'CC-ALUNA',
+            'wholesale' => [[6, 79000], [12, 75000]],
             'text' => 'Aluna Dress dari rayon premium dengan smoke elastis di bagian dada dan rok lebar mayung yang mengembang cantik. Busui & bumil friendly, adem dipakai seharian, dan tetap manis untuk keluar rumah.',
             'size' => "Satu ukuran (all size)\n• Lingkar dada (LD): 120\n• Panjang baju (PB): 80\n• Lebar bawah: mayung",
             'variants' => ['Motif', [['Pelangi Pastel', null], ['Pink Blossom', null], ['Mawar Cream', null]]],
@@ -300,6 +306,7 @@ class DatabaseSeeder extends Seeder
         ],
         'Almira One Set' => [
             'price' => 84900, 'compare' => 195000, 'weight' => 400, 'featured' => true, 'sku' => 'CC-ALMIRA',
+            'wholesale' => [[6, 79900], [12, 75900]],
             'text' => 'Almira One Set: atasan tali dengan rempel di dada dan bagian belakang full smoke yang melar, dipadukan celana kulot panjang. Rayon premium yang adem, jatuh, dan tidak menerawang.',
             'size' => "All size\n• Lingkar dada (LD): 120 (belakang full smoke)\n• Panjang baju (PB): 50\n• Panjang celana (PC): 100\n• Lingkar pinggang (LP): 75 (karet)",
             'variants' => ['Motif', [['Mustard Leaf', null], ['Biru Denim', null], ['Hitam Floral', null], ['Batik Klasik', null]]],

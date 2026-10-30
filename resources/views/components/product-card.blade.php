@@ -55,6 +55,11 @@
         @if ($preorder && ! $soldOut)
             <p class="mt-1 text-[11px] font-medium text-sage-600 sm:text-xs">PO ±{{ $product->preorderDays() }} hari</p>
         @endif
+        @if ($product->hasWholesale() && ! $soldOut)
+            <p class="mt-1 text-[11px] font-medium text-brand-700 sm:text-xs" title="Harga grosir mulai {{ $product->wholesaleMinQuantity() }} pcs, motif boleh campur">
+                Grosir mulai @rupiah($product->lowestWholesalePrice())
+            </p>
+        @endif
         @if ($product->review_count > 0)
             <p class="mt-1 flex items-center gap-1 text-[11px] text-stone-500 sm:text-xs">
                 <x-icon name="star" class="size-3.5 fill-brand-400 text-brand-400" />

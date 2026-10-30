@@ -167,6 +167,7 @@ class OrderController extends Controller
             })
             ->when($request->filled('courier'), fn ($q) => $q->where('courier', $request->string('courier')->value()))
             ->when($request->query('jenis') === 'pre-order', fn ($q) => $q->withPreorder())
+            ->when($request->query('jenis') === 'grosir', fn ($q) => $q->withWholesale())
             ->when($request->query('jenis') === 'ready', fn ($q) => $q->whereDoesntHave('items', fn ($i) => $i->where('is_preorder', true)))
             ->when($from, fn ($q) => $q->where('created_at', '>=', $from->startOfDay()))
             ->when($to, fn ($q) => $q->where('created_at', '<=', $to->endOfDay()));

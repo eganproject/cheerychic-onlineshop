@@ -57,7 +57,7 @@ class CartService
         // Buang item yang produk/variannya sudah tidak aktif/terhapus, dan sesuaikan dengan stok.
         $clean = [];
         $notices = [];
-        $lines = collect();
+        $rows = [];
 
         foreach ($raw as $key => $qty) {
             [$productId, $variantId] = $parsed[(string) $key];
@@ -73,14 +73,19 @@ class CartService
             }
 
             $variant?->setRelation('product', $product);
-            $line = new CartLine($product, min($qty, $product->purchasableQuantity($variant)), $variant);
-            $clean[$line->key()] = $line->quantity;
-            $lines->push($line);
+            $quantity = min($qty, $product->purchasableQuantity($variant));
+            $rows[] = [$product, $variant, $quantity];
+            $clean[self::key($product->id, $variant?->id)] = $quantity;
 
-            if ($line->quantity < $qty) {
-                $notices[] = "Jumlah {$line->name()} disesuaikan menjadi {$line->quantity} karena stok tersisa {$line->availableStock()}.";
+            if ($quantity < $qty) {
+                $name = $variant ? "{$product->name} ({$variant->name})" : $product->name;
+                $notices[] = "Jumlah {$name} disesuaikan menjadi {$quantity} karena stok tersisa {$product->purchasableQuantity($variant)}.";
             }
         }
+
+        // Harga grosir dihitung dari total jumlah per produk (motif/varian boleh dicampur).
+        $perProduct = self::quantitiesPerProduct(array_map(fn ($row) => [$row[0]->id, $row[2]], $rows));
+        $lines = collect($rows)->map(fn ($row) => new CartLine($row[0], $row[2], $row[1], $perProduct[$row[0]->id]));
 
         if ($clean != $raw) {
             $this->session->put(self::KEY, $clean);
@@ -91,6 +96,23 @@ class CartService
         }
 
         return $this->lines = $lines;
+    }
+
+    /**
+     * Total jumlah per produk, dasar harga grosir.
+     *
+     * @param  iterable<array{0: int, 1: int}>  $rows  [product_id, quantity]
+     * @return array<int, int>
+     */
+    public static function quantitiesPerProduct(iterable $rows): array
+    {
+        $totals = [];
+
+        foreach ($rows as [$productId, $quantity]) {
+            $totals[$productId] = ($totals[$productId] ?? 0) + $quantity;
+        }
+
+        return $totals;
     }
 
     /** Tambah produk/varian. Mengembalikan jumlah akhir di keranjang. */
@@ -155,6 +177,12 @@ class CartService
     public function subtotal(): int
     {
         return $this->lines()->sum(fn (CartLine $line) => $line->subtotal());
+    }
+
+    /** Total hemat dari harga grosir di keranjang. */
+    public function wholesaleSavings(): int
+    {
+        return $this->lines()->sum(fn (CartLine $line) => $line->wholesaleSavings());
     }
 
     /** Masa proses Pre Order terlama di keranjang (0 bila tidak ada produk PO). */

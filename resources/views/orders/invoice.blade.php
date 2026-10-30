@@ -52,10 +52,10 @@
                     <tr>
                         <td class="py-3">
                             <p class="font-semibold">{{ $item->product_name }}</p>
-                            <p class="text-xs text-stone-500">{{ collect([$item->variant_name, $item->sku, $item->is_preorder ? 'Pre Order ±'.$item->preorder_days.' hari' : null])->filter()->implode(' · ') }}</p>
+                            <p class="text-xs text-stone-500">{{ collect([$item->variant_name, $item->sku, $item->is_preorder ? 'Pre Order ±'.$item->preorder_days.' hari' : null, $item->isWholesale() ? 'Harga grosir' : null])->filter()->implode(' · ') }}</p>
                         </td>
                         <td class="py-3 text-center">{{ $item->quantity }}</td>
-                        <td class="py-3 text-right whitespace-nowrap">@rupiah($item->price)</td>
+                        <td class="py-3 text-right whitespace-nowrap">@rupiah($item->price)@if ($item->isWholesale())<br><span class="text-xs text-stone-400 line-through">@rupiah($item->retail_price)</span>@endif</td>
                         <td class="py-3 text-right font-semibold whitespace-nowrap">@rupiah($item->subtotal)</td>
                     </tr>
                 @endforeach

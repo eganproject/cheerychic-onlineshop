@@ -42,8 +42,9 @@
                             <div class="min-w-0 flex-1">
                                 <p class="font-semibold text-stone-900">{{ $item->product_name }}</p>
                                 @if ($item->variant_name)<p class="text-xs font-medium text-brand-700">{{ $item->variant_name }}</p>@endif
-                                <p class="text-xs text-stone-500">{{ $item->sku ?? 'Tanpa SKU' }} · {{ $item->quantity }} × @rupiah($item->price)</p>
+                                <p class="text-xs text-stone-500">{{ $item->sku ?? 'Tanpa SKU' }} · {{ $item->quantity }} × @rupiah($item->price)@if ($item->isWholesale()) <span class="text-stone-400 line-through">@rupiah($item->retail_price)</span>@endif</p>
                                 @if ($item->isPreorder())<x-preorder-badge :days="$item->preorder_days" class="mt-1" />@endif
+                                @if ($item->isWholesale())<x-wholesale-badge :savings="$item->wholesaleSavings()" class="mt-1" />@endif
                             </div>
                             <p class="font-semibold text-stone-900">@rupiah($item->subtotal)</p>
                         </li>

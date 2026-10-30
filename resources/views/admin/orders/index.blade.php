@@ -38,6 +38,7 @@
                     <option value="">Semua jenis</option>
                     <option value="pre-order" @selected(request('jenis') === 'pre-order')>Ada Pre Order</option>
                     <option value="ready" @selected(request('jenis') === 'ready')>Ready stock</option>
+                    <option value="grosir" @selected(request('jenis') === 'grosir')>Harga grosir</option>
                 </select>
                 <div class="flex gap-2">
                     <button class="btn btn-dark flex-1"><x-icon name="filter" class="size-4" /> Saring</button>
