@@ -174,11 +174,15 @@
                                     <p class="truncate font-medium text-stone-800">{{ $line->product->name }}</p>
                                     @if ($line->variant)<p class="truncate text-xs text-stone-500">{{ $line->variant->name }}</p>@endif
                                     <p class="text-xs text-stone-500">{{ $line->quantity }} × @rupiah($line->unitPrice())</p>
+                                    @if ($line->isPreorder())<x-preorder-badge :days="$line->preorderDays()" class="mt-1" />@endif
                                 </div>
                                 <p class="text-sm font-semibold">@rupiah($line->subtotal())</p>
                             </li>
                         @endforeach
                     </ul>
+                    @if ($preorderDays)
+                        <x-preorder-notice :days="$preorderDays" :mixed="$preorderMixed" class="mt-4 bg-white" />
+                    @endif
                     {{-- Voucher --}}
                     <div class="mt-4 border-t border-stone-200 pt-4" aria-live="polite">
                         <p class="flex items-center gap-2 text-sm font-semibold text-stone-900"><x-icon name="ticket" class="size-4" /> Voucher</p>

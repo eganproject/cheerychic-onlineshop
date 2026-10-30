@@ -25,7 +25,10 @@
                         <span class="text-stone-400">·</span>
                         <span class="text-stone-500">{{ $order->created_at->translatedFormat('d M Y') }}</span>
                     </div>
-                    <x-order-status :status="$order->status" />
+                    <div class="flex items-center gap-2">
+                        @if ($order->hasPreorder())<x-preorder-badge />@endif
+                        <x-order-status :status="$order->status" />
+                    </div>
                 </div>
                 <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
                     @if ($order->items->first()?->product)

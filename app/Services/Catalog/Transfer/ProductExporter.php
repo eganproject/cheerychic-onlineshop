@@ -37,9 +37,9 @@ class ProductExporter
         return [
             'Produk' => [
                 ProductImporter::COLUMNS,
-                ['', 'Kabel Data USB-C 1m', 'Kabel & Charger > Kabel Data', 'Kabel data fast charging 3A.', 'KBL-C1M', 'ya', 'tidak', '', '', '', '', 35000, 50000, 80, 25, 'https://contoh.com/foto/kabel-c.jpg'],
-                ['', 'Casing iPhone 15 Clear', 'Casing HP > Casing iPhone', 'Casing bening anti kuning.', '', 'ya', 'ya', 'Warna', 'Hitam', 'CS15-HTM', 'ya', 45000, '', 100, 10, ''],
-                ['', 'Casing iPhone 15 Clear', '', '', '', '', '', '', 'Putih', 'CS15-PTH', 'ya', 45000, '', 100, 8, ''],
+                ['', 'Kabel Data USB-C 1m', 'Kabel & Charger > Kabel Data', 'Kabel data fast charging 3A.', 'KBL-C1M', 'ya', 'tidak', '', '', '', '', 35000, 50000, 80, 25, 'https://contoh.com/foto/kabel-c.jpg', 0],
+                ['', 'Casing iPhone 15 Clear', 'Casing HP > Casing iPhone', 'Casing bening anti kuning.', '', 'ya', 'ya', 'Warna', 'Hitam', 'CS15-HTM', 'ya', 45000, '', 100, 10, '', 14],
+                ['', 'Casing iPhone 15 Clear', '', '', '', '', '', '', 'Putih', 'CS15-PTH', 'ya', 45000, '', 100, 8, '', ''],
             ],
             'Petunjuk' => self::productGuide(),
         ];
@@ -58,6 +58,7 @@ class ProductExporter
         foreach ($query->without('coverImage')->with(['variants', 'images'])->orderBy('id')->lazy(200) as $product) {
             /** @var Product $product */
             $images = $product->images->map->url()->implode(' | ');
+            $preorder = $product->isPreorder() ? $product->preorderDays() : 0;
             $base = [
                 $product->slug,
                 $product->name,
@@ -70,7 +71,7 @@ class ProductExporter
             ];
 
             if (! $product->has_variants) {
-                yield [...$base, '', '', '', $product->price, $product->compare_at_price ?? '', $product->weight, $product->stock, $images];
+                yield [...$base, '', '', '', $product->price, $product->compare_at_price ?? '', $product->weight, $product->stock, $images, $preorder];
 
                 continue;
             }
@@ -86,6 +87,7 @@ class ProductExporter
                     $variant->weight ?? '',
                     $variant->stock,
                     $i === 0 ? $images : '',
+                    $i === 0 ? $preorder : '',
                 ];
             }
         }
@@ -128,6 +130,7 @@ class ProductExporter
             ['berat_gram', 'Berat dalam gram untuk hitung ongkir. Kosong = 100 gram untuk produk baru.'],
             ['stok', 'Stok saat ini. Perubahan stok tercatat di riwayat stok. Kosong = stok produk lama tidak berubah.'],
             ['url_gambar', 'Opsional. Satu atau beberapa URL foto (pisahkan dengan |). Hanya diunduh bila produk belum punya foto.'],
+            ['pre_order_hari', 'Opsional. Isi lama proses Pre Order dalam hari (1–180) untuk menjadikan produk PO; produk PO bisa dipesan tanpa batas stok. Isi 0 = bukan PO (ready stock). Kosong = tidak berubah.'],
             ['', ''],
             ['Catatan', 'Hanya sheet pertama yang dibaca. Kolom kosong pada produk lama tidak mengubah data. Produk yang salah satu barisnya error akan dilewati seluruhnya.'],
         ];

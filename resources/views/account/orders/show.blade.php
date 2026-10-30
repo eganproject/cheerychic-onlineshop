@@ -124,6 +124,10 @@
         </div>
     @endif
 
+    @if ($order->hasPreorder() && in_array($order->status, [OrderStatus::PendingPayment, OrderStatus::Paid, OrderStatus::Processing], true))
+        <x-preorder-notice :days="$order->preorderDays()" :ready-at="$order->paid_at ? $order->preorderReadyAt() : null" class="mb-6" />
+    @endif
+
     <div class="grid gap-6 xl:grid-cols-3">
         <div class="card overflow-hidden xl:col-span-2">
             <div class="border-b border-stone-100 p-5"><h2 class="font-bold text-stone-900">Produk</h2></div>
@@ -139,6 +143,7 @@
                             <p class="font-semibold text-stone-900">{{ $item->product_name }}</p>
                             @if ($item->variant_name)<p class="text-xs text-stone-500">{{ $item->variant_name }}</p>@endif
                             <p class="text-sm text-stone-500">{{ $item->quantity }} × @rupiah($item->price)</p>
+                            @if ($item->isPreorder())<x-preorder-badge :days="$item->preorder_days" class="mt-1" />@endif
                         </div>
                         <p class="font-semibold">@rupiah($item->subtotal)</p>
                     </li>

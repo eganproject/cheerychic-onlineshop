@@ -34,9 +34,14 @@
                         <option value="{{ $courier }}" @selected(request('courier') === $courier)>{{ strtoupper($courier) }}</option>
                     @endforeach
                 </select>
+                <select name="jenis" class="input lg:w-40" aria-label="Jenis pesanan">
+                    <option value="">Semua jenis</option>
+                    <option value="pre-order" @selected(request('jenis') === 'pre-order')>Ada Pre Order</option>
+                    <option value="ready" @selected(request('jenis') === 'ready')>Ready stock</option>
+                </select>
                 <div class="flex gap-2">
                     <button class="btn btn-dark flex-1"><x-icon name="filter" class="size-4" /> Saring</button>
-                    @if (request()->hasAny(['q', 'from', 'to', 'courier']))
+                    @if (request()->hasAny(['q', 'from', 'to', 'courier', 'jenis']))
                         <a href="{{ route('admin.orders.index', array_filter(['status' => $status?->value])) }}" class="btn btn-ghost" title="Hapus filter"><x-icon name="x" class="size-4" /></a>
                     @endif
                 </div>
@@ -70,6 +75,13 @@
                                 <td class="whitespace-nowrap">
                                     <a href="{{ route('admin.orders.show', $order) }}" class="font-semibold text-stone-900 hover:text-brand-700">{{ $order->code }}</a>
                                     <p class="text-xs text-stone-500">{{ $order->created_at->translatedFormat('d M Y, H:i') }}</p>
+                                    @if ($order->preorder_days_max !== null)
+                                        @php($readyAt = $order->paid_at?->copy()->addDays(max(1, (int) $order->preorder_days_max)))
+                                        <span class="mt-1 inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-700 ring-1 ring-sky-600/20"
+                                              title="Berisi produk Pre Order{{ $readyAt ? ', perkiraan siap kirim '.$readyAt->translatedFormat('d M Y') : '' }}">
+                                            <x-icon name="clock" class="size-3" /> PO{{ $readyAt && in_array($order->status, [\App\Enums\OrderStatus::Paid, \App\Enums\OrderStatus::Processing], true) ? ' · siap '.$readyAt->translatedFormat('d M') : '' }}
+                                        </span>
+                                    @endif
                                     <p class="mt-1 text-xs text-stone-600 md:hidden">{{ $order->user->name }}</p>
                                     <div class="mt-1 sm:hidden"><x-order-status :status="$order->status" /></div>
                                 </td>

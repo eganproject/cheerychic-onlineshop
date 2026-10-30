@@ -16,7 +16,7 @@
                                     wrapper-class="sm:w-56" aria-label="Filter kategori" />
             <select name="status" class="input sm:w-44" x-searchable aria-label="Filter status">
                 <option value="">Semua status</option>
-                @foreach (['aktif' => 'Aktif', 'nonaktif' => 'Nonaktif', 'unggulan' => 'Unggulan', 'stok-menipis' => 'Stok menipis', 'stok-habis' => 'Stok habis'] as $value => $label)
+                @foreach (['aktif' => 'Aktif', 'nonaktif' => 'Nonaktif', 'unggulan' => 'Unggulan', 'pre-order' => 'Pre Order', 'stok-menipis' => 'Stok menipis', 'stok-habis' => 'Stok habis'] as $value => $label)
                     <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
                 @endforeach
             </select>
@@ -78,7 +78,11 @@
                                     @if ($product->isOnSale())<p class="text-xs text-stone-400 line-through">@rupiah($product->compare_at_price)</p>@endif
                                 </td>
                                 <td>
+                                    @if ($product->is_preorder)
+                                        <span class="font-semibold text-sky-700" title="Pre Order tidak dibatasi stok">PO</span>
+                                    @else
                                     <span @class(['font-semibold', 'text-rose-600' => $product->stock === 0, 'text-amber-600' => $product->stock > 0 && $product->isLowStock(), 'text-stone-700' => ! $product->isLowStock()])>{{ $product->stock }}</span>
+                                    @endif
                                 </td>
                                 <td class="hidden sm:table-cell">
                                     <div class="flex flex-wrap gap-1">
@@ -89,6 +93,9 @@
                                         @endif
                                         @if ($product->is_featured)
                                             <span class="badge bg-amber-50 text-amber-700 ring-amber-600/20"><x-icon name="star" class="size-3" /> Unggulan</span>
+                                        @endif
+                                        @if ($product->is_preorder)
+                                            <span class="badge bg-sky-50 text-sky-700 ring-sky-600/20" title="{{ $product->preorderSummary() }}"><x-icon name="clock" class="size-3" /> PO {{ $product->preorderDays() }} hari</span>
                                         @endif
                                     </div>
                                 </td>

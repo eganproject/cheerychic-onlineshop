@@ -41,7 +41,7 @@
                         @foreach ($order->items as $item)
                             <tr>
                                 <td class="py-2"><span class="inline-block size-4 rounded border border-stone-400"></span></td>
-                                <td class="py-2"><p class="font-semibold">{{ $item->product_name }}</p>@if ($item->variant_name)<p class="text-xs text-stone-500">{{ $item->variant_name }}</p>@endif</td>
+                                <td class="py-2"><p class="font-semibold">{{ $item->product_name }}</p>@if ($item->variant_name)<p class="text-xs text-stone-500">{{ $item->variant_name }}</p>@endif @if ($item->is_preorder)<p class="text-xs font-semibold uppercase">Pre Order</p>@endif</td>
                                 <td class="py-2 font-mono text-xs">{{ $item->sku ?? '—' }}</td>
                                 <td class="py-2 text-right text-base font-bold">{{ $item->quantity }}</td>
                             </tr>

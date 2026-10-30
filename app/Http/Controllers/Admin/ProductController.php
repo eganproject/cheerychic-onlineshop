@@ -32,6 +32,8 @@ class ProductController extends Controller
             ->when($request->query('status') === 'aktif', fn ($q) => $q->where('is_active', true))
             ->when($request->query('status') === 'nonaktif', fn ($q) => $q->where('is_active', false))
             ->when($request->query('status') === 'unggulan', fn ($q) => $q->where('is_featured', true))
+            ->when($request->query('status') === 'pre-order', fn ($q) => $q->preorder())
+            ->when(in_array($request->query('status'), ['stok-menipis', 'stok-habis'], true), fn ($q) => $q->where('is_preorder', false))
             ->when($request->query('status') === 'stok-menipis', fn ($q) => $q->where(fn ($q) => $q
                 ->where('stock', '<=', $threshold)
                 ->orWhereHas('variants', fn ($v) => $v->where('is_active', true)->where('stock', '<=', $threshold))))

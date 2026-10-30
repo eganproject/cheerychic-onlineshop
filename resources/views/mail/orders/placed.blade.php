@@ -6,6 +6,12 @@ Tanggal: {{ $order->created_at->translatedFormat('d F Y, H:i') }} WIB
 
 @include('mail.orders._items')
 
+@if ($order->hasPreorder())
+<x-mail::panel>
+**Ada produk Pre Order.** Pesanan dikirim sekitar {{ $order->preorderDays() }} hari setelah pembayaran, setelah masa produksi selesai.
+</x-mail::panel>
+@endif
+
 @if ($order->status === \App\Enums\OrderStatus::PendingPayment)
 Segera selesaikan pembayaran dalam **{{ config('shop.payment.expiry_hours') }} jam**. Lewat dari itu, pesanan akan dibatalkan otomatis.
 

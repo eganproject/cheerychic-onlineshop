@@ -191,8 +191,8 @@ class OrderService
     {
         $product = $item->product;
 
-        if (! $product) {
-            return; // Produk sudah dihapus, tidak ada stok yang perlu dikembalikan.
+        if (! $product || $item->is_preorder) {
+            return; // Produk terhapus, atau item Pre Order yang memang tidak mengurangi stok.
         }
 
         if ($item->variant) {

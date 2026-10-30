@@ -46,6 +46,8 @@ class CheckoutController extends Controller
             'voucherError' => $voucherError,
             'suggestions' => $this->vouchers->suggestions($request->user(), $subtotal),
             'weight' => $this->cart->totalWeight(),
+            'preorderDays' => $this->cart->preorderDays(),
+            'preorderMixed' => $this->cart->hasMixedPreorder(),
             'addresses' => $addresses,
             'address' => $address,
             'quote' => $address ? $this->quote($address) : ['rates' => [], 'error' => null],

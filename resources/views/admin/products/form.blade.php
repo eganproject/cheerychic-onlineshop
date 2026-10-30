@@ -153,7 +153,7 @@
                                   :tips="['Isi hanya saat sedang promo; kosongkan bila tidak diskon.', 'Harus lebih besar dari harga jual, kalau tidak, tidak dianggap diskon.']" />
                     <x-form.number name="stock" label="Stok" :value="$product->stock ?? 0" min="0" suffix="pcs" x-bind:required="!hasVariants" x-bind:disabled="hasVariants"
                                    :hint="$editing ? 'Perubahan tercatat di riwayat stok.' : null"
-                                   tip="Jumlah barang siap jual. Berkurang otomatis saat pembeli checkout dan kembali bila pesanan batal/kedaluwarsa. Stok 0 = tampil “Habis”."
+                                   tip="Jumlah barang siap jual. Berkurang otomatis saat pembeli checkout dan kembali bila pesanan batal/kedaluwarsa. Stok 0 = tampil “Habis”. Produk Pre Order tidak memakai stok (bisa dipesan tanpa batas)."
                                    :tips="['Untuk barang masuk atau stock opname rutin, pakai menu Stok supaya alasannya tercatat.']" />
                     <input type="hidden" name="stock_original" value="{{ old('stock_original', $editing && ! $product->has_variants ? $product->stock : '') }}" :disabled="hasVariants">
                 </div>
@@ -256,6 +256,31 @@
                         :tips="['Tandai 4–8 produk andalan saja, supaya tetap terasa istimewa.']" /></span><span class="text-xs text-stone-500">Tampil di beranda</span></span>
                     <input type="checkbox" name="is_featured" value="1" class="checkbox size-5" @checked(old('is_featured', $product->is_featured))>
                 </label>
+            </div>
+
+            {{-- Pre Order --}}
+            <div class="card space-y-4 p-6" x-data="{ preorder: @js((bool) old('is_preorder', $product->is_preorder)) }">
+                <label class="flex items-center justify-between gap-3">
+                    <span>
+                        <span class="flex items-center gap-1.5 font-bold text-stone-900">Pre Order
+                            <x-tip title="Pre Order (PO)" text="Produk tetap bisa dibeli, tapi pembeli diberi tahu bahwa barang baru dikirim setelah masa produksi. Label “Pre Order” tampil di katalog, halaman produk, keranjang, checkout, dan pesanan."
+                                :tips="['PO tidak dibatasi jumlah: stok diabaikan dan tidak berkurang saat ada pesanan (maks. '.\App\Models\Product::PREORDER_MAX_QTY.' pcs per pesanan).', 'Untuk menutup PO, matikan opsi ini atau nonaktifkan produk.', 'Matikan opsi ini begitu barang ready stock; pesanan yang sudah masuk tetap tercatat sebagai PO.']" />
+                        </span>
+                        <span class="text-xs text-stone-500">Tanpa batas stok, dikirim setelah produksi</span>
+                    </span>
+                    <input type="hidden" name="is_preorder" value="0">
+                    <input type="checkbox" name="is_preorder" value="1" x-model="preorder" class="checkbox size-5">
+                </label>
+                <div x-show="preorder" x-cloak class="space-y-4 border-t border-stone-100 pt-4">
+                    <x-form.number name="preorder_days" label="Lama proses" :value="$product->preorder_days ?? 14" min="1" max="180" suffix="hari"
+                                   x-bind:required="preorder" x-bind:disabled="!preorder"
+                                   hint="Dihitung sejak pembayaran sampai barang siap dikirim."
+                                   tip="Perkiraan hari kerja produksi + pengemasan. Ditampilkan ke pembeli sebagai “Dikirim ±N hari setelah pembayaran”, dan dipakai menghitung perkiraan tanggal kirim di pesanan."
+                                   :tips="['Beri sedikit cadangan waktu; lebih baik barang datang lebih cepat daripada terlambat.']" />
+                    <x-form.input name="preorder_note" label="Catatan PO" optional :value="$product->preorder_note" maxlength="160"
+                                  x-bind:disabled="!preorder" placeholder="Contoh: Batch 2, mulai dikirim 20 November"
+                                  tip="Info tambahan yang tampil di halaman produk di bawah label Pre Order, mis. nomor batch atau tanggal mulai kirim." />
+                </div>
             </div>
 
             <div class="card p-6">

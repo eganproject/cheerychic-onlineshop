@@ -33,6 +33,9 @@
                                 @if ($line->variant)
                                     <p class="mt-1 text-xs font-medium text-stone-600">{{ $line->product->variant_label ?: 'Varian' }}: {{ $line->variant->name }}</p>
                                 @endif
+                                @if ($line->isPreorder())
+                                    <x-preorder-badge :days="$line->preorderDays()" class="mt-1.5" />
+                                @endif
                                 <p class="mt-1 text-sm text-stone-500">
                                     @rupiah($line->unitPrice())
                                     @if ($line->compareAtPrice() > $line->unitPrice())<span class="ml-1 text-xs text-stone-400 line-through">@rupiah($line->compareAtPrice())</span>@endif
@@ -75,6 +78,9 @@
                 <div class="mt-5 flex justify-between border-t border-stone-200 pt-5 text-base font-semibold">
                     <span>Total</span><span>@rupiah($subtotal)</span>
                 </div>
+                @if ($preorderDays ?? 0)
+                    <x-preorder-notice :days="$preorderDays" :mixed="$preorderMixed ?? false" class="mt-5 bg-white" />
+                @endif
                 <a href="{{ route('checkout.index') }}" class="btn btn-brand btn-pill mt-6 w-full py-4">Checkout <x-icon name="arrow-right" class="size-4" /></a>
                 <a href="{{ route('products.index') }}" class="link-underline mx-auto mt-2 block w-fit py-3 text-center text-sm font-semibold lg:mt-4 lg:py-0">Lanjut belanja</a>
                 <ul class="mt-6 space-y-2 border-t border-stone-200 pt-5 text-xs text-stone-500">

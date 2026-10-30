@@ -17,10 +17,14 @@ use Illuminate\Support\Str;
 #[Fillable([
     'category_id', 'name', 'slug', 'sku', 'description', 'price', 'compare_at_price',
     'weight', 'variant_label', 'is_active', 'is_featured',
+    'is_preorder', 'preorder_days', 'preorder_note',
 ])]
 class Product extends Model
 {
     use HasFactory;
+
+    /** Batas jumlah per baris keranjang untuk produk Pre Order (PO tidak dibatasi stok). */
+    public const PREORDER_MAX_QTY = 99;
 
     // `stock`, `has_variants`, `rating_avg`, `review_count` sengaja tidak mass-assignable. Stok diubah lewat
     // StockService (tercatat di riwayat), ringkasan varian lewat syncVariantSummary(),
@@ -38,6 +42,8 @@ class Product extends Model
             'weight' => 'integer',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'is_preorder' => 'boolean',
+            'preorder_days' => 'integer',
             'has_variants' => 'boolean',
             'rating_avg' => 'float',
             'review_count' => 'integer',
@@ -106,6 +112,19 @@ class Product extends Model
     protected function active(Builder $query): void
     {
         $query->where('is_active', true);
+    }
+
+    #[Scope]
+    protected function preorder(Builder $query): void
+    {
+        $query->where('is_preorder', true);
+    }
+
+    /** Bisa dibeli sekarang: stok tersedia, atau produk Pre Order (tanpa batas stok). */
+    #[Scope]
+    protected function available(Builder $query): void
+    {
+        $query->where(fn (Builder $q) => $q->where('stock', '>', 0)->orWhere('is_preorder', true));
     }
 
     #[Scope]
@@ -184,9 +203,48 @@ class Product extends Model
             : 0;
     }
 
+    /** Bisa dibeli. Produk Pre Order selalu bisa dipesan tanpa melihat stok. */
     public function inStock(): bool
     {
-        return $this->stock > 0;
+        return $this->isPreorder() || $this->stock > 0;
+    }
+
+    /** Varian bisa dibeli: aktif dan (produk PO atau stok varian tersedia). */
+    public function variantAvailable(ProductVariant $variant): bool
+    {
+        return $variant->is_active && ($this->isPreorder() || $variant->stock > 0);
+    }
+
+    /** Jumlah maksimal yang boleh dibeli per baris: stok, atau batas wajar untuk PO. */
+    public function purchasableQuantity(?ProductVariant $variant = null): int
+    {
+        return $this->isPreorder() ? self::PREORDER_MAX_QTY : (int) ($variant?->stock ?? $this->stock);
+    }
+
+    /**
+     * Produk Pre Order: bisa dipesan tanpa batas stok (stok tidak dikurangi),
+     * lalu dikirim setelah masa produksi `preorder_days` hari sejak pembayaran.
+     */
+    public function isPreorder(): bool
+    {
+        return (bool) $this->is_preorder;
+    }
+
+    /** Lama proses PO dalam hari (minimal 1 bila PO aktif). */
+    public function preorderDays(): int
+    {
+        return $this->isPreorder() ? max(1, (int) $this->preorder_days) : 0;
+    }
+
+    /** Contoh: "Dikirim ±14 hari setelah pembayaran". */
+    public function preorderSummary(): ?string
+    {
+        return $this->isPreorder() ? self::preorderText($this->preorderDays()) : null;
+    }
+
+    public static function preorderText(int $days): string
+    {
+        return 'Dikirim ±'.$days.' hari setelah pembayaran';
     }
 
     public function hasReviews(): bool
@@ -204,6 +262,6 @@ class Product extends Model
 
     public function isLowStock(): bool
     {
-        return $this->stock <= config('shop.low_stock_threshold');
+        return ! $this->isPreorder() && $this->stock <= config('shop.low_stock_threshold');
     }
 }

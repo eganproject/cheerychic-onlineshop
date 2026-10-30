@@ -11,6 +11,22 @@
         </div>
     @endif
 
+    @if ($order->hasPreorder() && ! in_array($order->status, [\App\Enums\OrderStatus::Cancelled, \App\Enums\OrderStatus::Delivered, \App\Enums\OrderStatus::Completed, \App\Enums\OrderStatus::Shipped], true))
+        <div class="mb-6 flex gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-800">
+            <x-icon name="clock" class="size-5 shrink-0" />
+            <div>
+                <p class="font-semibold">Pesanan berisi produk Pre Order (proses ±{{ $order->preorderDays() }} hari).</p>
+                <p>
+                    @if ($order->paid_at)
+                        Perkiraan siap kirim: <strong>{{ $order->preorderReadyAt()->translatedFormat('l, d F Y') }}</strong>. Kirim semua barang sekaligus setelah produk PO selesai diproduksi.
+                    @else
+                        Tanggal siap kirim dihitung setelah pelanggan membayar.
+                    @endif
+                </p>
+            </div>
+        </div>
+    @endif
+
     <div class="grid gap-6 lg:grid-cols-3">
         <div class="space-y-6 lg:col-span-2">
             <div class="card overflow-hidden">
@@ -27,6 +43,7 @@
                                 <p class="font-semibold text-stone-900">{{ $item->product_name }}</p>
                                 @if ($item->variant_name)<p class="text-xs font-medium text-brand-700">{{ $item->variant_name }}</p>@endif
                                 <p class="text-xs text-stone-500">{{ $item->sku ?? 'Tanpa SKU' }} · {{ $item->quantity }} × @rupiah($item->price)</p>
+                                @if ($item->isPreorder())<x-preorder-badge :days="$item->preorder_days" class="mt-1" />@endif
                             </div>
                             <p class="font-semibold text-stone-900">@rupiah($item->subtotal)</p>
                         </li>

@@ -2,7 +2,7 @@
     <x-slot:head>
         <meta property="product:price:amount" content="{{ $product->price }}">
         <meta property="product:price:currency" content="IDR">
-        <meta property="product:availability" content="{{ $product->inStock() ? 'in stock' : 'out of stock' }}">
+        <meta property="product:availability" content="{{ ! $product->inStock() ? 'out of stock' : ($product->isPreorder() ? 'preorder' : 'in stock') }}">
         {!! \App\Support\StructuredData::script(
             \App\Support\StructuredData::product($product, $reviews->getCollection()),
             \App\Support\StructuredData::breadcrumbs(array_values(array_filter([
@@ -17,17 +17,21 @@
     @php
         $variants = $product->activeVariants;
         $images = $product->images;
+        // Pre Order tidak dibatasi stok: jumlah maksimal = batas per pesanan.
+        $preorder = $product->isPreorder();
+        $buyable = fn ($v) => $preorder ? \App\Models\Product::PREORDER_MAX_QTY : $v->stock;
+        $available = $variants->filter(fn ($v) => $product->variantAvailable($v));
         $pageConfig = [
             'images' => $images->map(fn ($i) => ['id' => $i->id, 'url' => $i->url()])->values(),
             'variants' => $variants->map(fn ($v) => [
                 'id' => $v->id, 'name' => $v->name, 'price' => $v->price, 'compare_at_price' => $v->compare_at_price,
-                'stock' => $v->stock, 'image_id' => $v->product_image_id, 'sku' => $v->sku,
+                'stock' => $buyable($v), 'image_id' => $v->product_image_id, 'sku' => $v->sku,
             ])->values(),
             // Pilih otomatis bila hanya ada satu varian yang tersedia.
-            'selectedId' => old('variant_id') ? (int) old('variant_id') : ($variants->where('stock', '>', 0)->count() === 1 ? $variants->firstWhere('stock', '>', 0)->id : null),
+            'selectedId' => old('variant_id') ? (int) old('variant_id') : ($available->count() === 1 ? $available->first()->id : null),
             'price' => $product->price,
             'compareAt' => $product->compare_at_price,
-            'stock' => $product->stock,
+            'stock' => $product->purchasableQuantity(),
         ];
         $priceRange = $variants->isNotEmpty() && $variants->pluck('price')->unique()->count() > 1;
         $lowStock = config('shop.low_stock_threshold');
@@ -115,10 +119,13 @@
                             @endif
 
                             <div class="pointer-events-none absolute top-3 left-3 flex flex-col items-start gap-1.5 lg:top-4 lg:left-4">
+                                @if ($preorder)
+                                    <span class="tag gap-1 bg-sage-600 text-white shadow-xs"><x-icon name="clock" class="size-3" /> Pre Order</span>
+                                @endif
                                 <template x-if="discount">
                                     <span class="tag bg-accent-500 text-white" x-text="`Hemat ${discount}%`"></span>
                                 </template>
-                                @if ($product->created_at?->gt(now()->subDays(30)))
+                                @if (! $preorder && $product->created_at?->gt(now()->subDays(30)))
                                     <span class="tag bg-white text-ink shadow-xs">Baru</span>
                                 @endif
                             </div>
@@ -155,12 +162,27 @@
                                   x-text="`Hemat ${rupiah(compareAt - price)}`"></span>
                         </div>
 
-                        <p class="mt-3 flex items-center gap-2 text-sm text-stone-600">
-                            <span class="size-2 rounded-full" :class="stock < 1 ? 'bg-stone-400' : (stock <= {{ $lowStock }} ? 'bg-amber-500' : 'bg-emerald-500')"></span>
-                            <span x-text="stock < 1 ? 'Stok habis' : (stock <= {{ $lowStock }} ? `Stok terbatas, sisa ${stock}` : 'Stok tersedia, siap dikirim')">
-                                {{ ! $product->inStock() ? 'Stok habis' : ($product->isLowStock() ? 'Stok terbatas, sisa '.$product->stock : 'Stok tersedia, siap dikirim') }}
-                            </span>
-                        </p>
+                        @if ($preorder)
+                            {{-- Pre Order: bisa dipesan tanpa batas stok. --}}
+                            <div class="mt-4 rounded-2xl border border-sage-200 bg-sage-50 p-4 text-sm">
+                                <p class="flex items-center gap-2 font-semibold text-sage-600">
+                                    <x-icon name="clock" class="size-4" /> Pre Order · {{ $product->preorderSummary() }}
+                                </p>
+                                @if ($product->preorder_note)
+                                    <p class="mt-1 text-stone-600">{{ $product->preorder_note }}</p>
+                                @endif
+                                <p class="mt-2 flex items-center gap-2 text-stone-600">
+                                    <span class="size-2 rounded-full bg-emerald-500"></span> Bisa dipesan, dibuat khusus untukmu
+                                </p>
+                            </div>
+                        @else
+                            <p class="mt-3 flex items-center gap-2 text-sm text-stone-600">
+                                <span class="size-2 rounded-full" :class="stock < 1 ? 'bg-stone-400' : (stock <= {{ $lowStock }} ? 'bg-amber-500' : 'bg-emerald-500')"></span>
+                                <span x-text="stock < 1 ? 'Stok habis' : (stock <= {{ $lowStock }} ? `Stok terbatas, sisa ${stock}` : 'Stok tersedia, siap dikirim')">
+                                    {{ ! $product->inStock() ? 'Stok habis' : ($product->isLowStock() ? 'Stok terbatas, sisa '.$product->stock : 'Stok tersedia, siap dikirim') }}
+                                </span>
+                            </p>
+                        @endif
 
                         <div class="mt-6 border-t border-stone-200 pt-6">
                             {{-- Varian --}}
@@ -172,8 +194,9 @@
                                     </p>
                                     <div class="mt-3 flex flex-wrap gap-2">
                                         @foreach ($variants as $variant)
-                                            <button type="button" @click="select(@js(['id' => $variant->id, 'stock' => $variant->stock, 'image_id' => $variant->product_image_id]))"
-                                                    @disabled(! $variant->inStock())
+                                            @php($variantOk = $product->variantAvailable($variant))
+                                            <button type="button" @click="select(@js(['id' => $variant->id, 'stock' => $buyable($variant), 'image_id' => $variant->product_image_id]))"
+                                                    @disabled(! $variantOk)
                                                     :aria-pressed="selectedId === {{ $variant->id }}"
                                                     :class="selectedId === {{ $variant->id }} ? 'border-ink ring-1 ring-ink' : 'border-stone-200 hover:border-stone-400'"
                                                     class="relative flex min-h-11 items-center gap-2 rounded-xl border bg-white px-3.5 py-2 text-left text-sm font-medium transition disabled:cursor-not-allowed disabled:border-dashed disabled:text-stone-300">
@@ -181,8 +204,8 @@
                                                     <img src="{{ $variant->image->url() }}" referrerpolicy="no-referrer" alt="" class="size-7 shrink-0 rounded-md object-cover">
                                                 @endif
                                                 <span class="min-w-0 leading-tight">
-                                                    <span @class(['block truncate', 'line-through' => ! $variant->inStock()])>{{ $variant->name }}</span>
-                                                    @unless ($variant->inStock())<span class="block text-[11px] font-normal no-underline">Habis</span>@endunless
+                                                    <span @class(['block truncate', 'line-through' => ! $variantOk])>{{ $variant->name }}</span>
+                                                    @unless ($variantOk)<span class="block text-[11px] font-normal no-underline">Habis</span>@endunless
                                                 </span>
                                             </button>
                                         @endforeach
@@ -210,10 +233,10 @@
                                 </form>
                                 {{-- Tombol di luar <form>: tombol wishlist punya form sendiri, dan form bersarang membuat "Beli sekarang" tidak terkirim. --}}
                                 <div class="mt-5 flex gap-2">
-                                    <button form="add-to-cart" class="btn btn-brand btn-pill min-h-14 flex-1 text-[15px]"><x-icon name="bag" class="size-5" /> Tambah ke keranjang</button>
+                                    <button form="add-to-cart" class="btn btn-brand btn-pill min-h-14 flex-1 text-[15px]"><x-icon name="bag" class="size-5" /> {{ $preorder ? 'Pre Order ke keranjang' : 'Tambah ke keranjang' }}</button>
                                     <x-wishlist-button :product="$product" variant="outline" class="shrink-0" />
                                 </div>
-                                <button form="add-to-cart" name="buy_now" value="1" class="btn btn-ink btn-pill mt-2 min-h-14 w-full text-[15px]">Beli sekarang</button>
+                                <button form="add-to-cart" name="buy_now" value="1" class="btn btn-ink btn-pill mt-2 min-h-14 w-full text-[15px]">{{ $preorder ? 'Pre Order sekarang' : 'Beli sekarang' }}</button>
                             @else
                                 <div class="rounded-2xl bg-sand-100 p-5 text-sm text-stone-600">
                                     Produk ini sedang habis.
@@ -274,11 +297,14 @@
                                         @if ($variants->isNotEmpty())
                                             <dt class="{{ $row }} font-medium text-ink max-sm:border-0 max-sm:pb-0">{{ $product->variant_label ?: 'Varian' }}</dt><dd class="{{ $row }}">{{ $variants->pluck('name')->join(', ') }}</dd>
                                         @endif
+                                        @if ($preorder)
+                                            <dt class="{{ $row }} font-medium text-ink max-sm:border-0 max-sm:pb-0">Pre Order</dt><dd class="{{ $row }}">{{ $product->preorderSummary() }}</dd>
+                                        @endif
                                         <dt class="{{ $row }} font-medium text-ink max-sm:border-0 max-sm:pb-0">Berat</dt><dd class="{{ $row }}">{{ $product->weight }} gr</dd>
                                     </dl>
                                 @elseif ($key === 'ship')
                                     <div class="grid max-w-3xl gap-3 sm:grid-cols-2">
-                                        <div class="rounded-2xl bg-sand-50 p-5"><x-icon name="truck" class="size-6 text-brand-600" /><p class="mt-3 font-semibold text-ink">Pengiriman</p><p class="mt-1 text-sm">Dikirim dari gudang kami dengan kurir pilihanmu (JNE, SiCepat, J&amp;T, POS, dan lainnya). Ongkir dihitung otomatis saat checkout.</p></div>
+                                        <div class="rounded-2xl bg-sand-50 p-5"><x-icon name="truck" class="size-6 text-brand-600" /><p class="mt-3 font-semibold text-ink">Pengiriman</p><p class="mt-1 text-sm">Dikirim dari gudang kami dengan kurir pilihanmu (JNE, SiCepat, J&amp;T, POS, dan lainnya). Ongkir dihitung otomatis saat checkout.@if ($preorder) <strong class="font-semibold text-ink">Produk ini Pre Order: {{ mb_strtolower($product->preorderSummary()) }}.</strong>@endif</p></div>
                                         <div class="rounded-2xl bg-sand-50 p-5"><x-icon name="credit-card" class="size-6 text-brand-600" /><p class="mt-3 font-semibold text-ink">Pembayaran</p><p class="mt-1 text-sm">Bayar dengan transfer bank, e-wallet, atau QRIS. Pesanan diproses setelah pembayaran terkonfirmasi.</p></div>
                                     </div>
                                 @else
@@ -346,7 +372,7 @@
                         </p>
                     </div>
                     <button form="add-to-cart" class="btn btn-brand rounded-full px-5 py-3"><x-icon name="bag" class="size-4" /> Tambah</button>
-                    <button form="add-to-cart" name="buy_now" value="1" class="btn btn-ink rounded-full px-5 py-3">Beli</button>
+                    <button form="add-to-cart" name="buy_now" value="1" class="btn btn-ink rounded-full px-5 py-3">{{ $preorder ? 'Pre Order' : 'Beli' }}</button>
                 </div>
             </div>
         @endif

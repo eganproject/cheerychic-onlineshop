@@ -55,6 +55,9 @@ class ProductRequest extends FormRequest
             'weight' => ['required', 'integer', 'min:1', 'max:100000'],
             'is_active' => ['sometimes', 'boolean'],
             'is_featured' => ['sometimes', 'boolean'],
+            'is_preorder' => ['sometimes', 'boolean'],
+            'preorder_days' => ['exclude_unless:is_preorder,1', 'required', 'integer', 'min:1', 'max:180'],
+            'preorder_note' => ['exclude_unless:is_preorder,1', 'nullable', 'string', 'max:160'],
             'has_variants' => ['sometimes', 'boolean'],
 
             // Tanpa varian: harga & stok di level produk.
@@ -129,6 +132,8 @@ class ProductRequest extends FormRequest
             'compare_at_price' => 'harga coret',
             'stock' => 'stok',
             'weight' => 'berat',
+            'preorder_days' => 'lama proses pre order',
+            'preorder_note' => 'catatan pre order',
             'variant_label' => 'judul varian',
             'variants' => 'varian',
             'variants.*.name' => 'nama varian',

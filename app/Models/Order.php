@@ -7,6 +7,8 @@ use App\Events\OrderStatusChanged;
 use App\Observers\OrderObserver;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -192,5 +194,34 @@ class Order extends Model
     public function recipientPhoneLastDigits(int $digits = 5): string
     {
         return substr(preg_replace('/\D/', '', (string) $this->recipient_phone), -$digits);
+    }
+
+    /** Apakah pesanan berisi produk Pre Order (butuh item dimuat). */
+    public function hasPreorder(): bool
+    {
+        return $this->items->contains(fn (OrderItem $item) => $item->isPreorder());
+    }
+
+    /** Masa proses PO terlama di pesanan ini, dalam hari (0 bila tidak ada PO). */
+    public function preorderDays(): int
+    {
+        return (int) $this->items->where('is_preorder', true)->max(fn (OrderItem $item) => max(1, (int) $item->preorder_days));
+    }
+
+    /**
+     * Perkiraan pesanan siap dikirim: waktu bayar (atau sekarang bila belum bayar)
+     * + masa proses PO terlama. Null bila tidak ada produk PO.
+     */
+    public function preorderReadyAt(): ?CarbonInterface
+    {
+        $days = $this->preorderDays();
+
+        return $days > 0 ? ($this->paid_at ?? now())->copy()->addDays($days)->startOfDay() : null;
+    }
+
+    #[Scope]
+    protected function withPreorder(Builder $query): void
+    {
+        $query->whereHas('items', fn (Builder $q) => $q->where('is_preorder', true));
     }
 }

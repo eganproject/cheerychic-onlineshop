@@ -4,7 +4,11 @@
 @case($S::Paid)
 # Pembayaran berhasil
 
+@if ($order->hasPreorder())
+Pembayaran untuk pesanan **{{ $order->code }}** sudah kami terima. Pesananmu berisi produk Pre Order, jadi akan dikirim setelah masa produksi selesai, perkiraan siap kirim sekitar **{{ $order->preorderReadyAt()->translatedFormat('j F Y') }}**.
+@else
 Pembayaran untuk pesanan **{{ $order->code }}** sudah kami terima. Tim gudang segera menyiapkan pesananmu.
+@endif
 @break
 @case($S::Shipped)
 # Pesananmu dalam perjalanan
