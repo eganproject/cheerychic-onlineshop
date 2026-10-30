@@ -73,7 +73,7 @@ class CartService
             }
 
             $variant?->setRelation('product', $product);
-            $line = new CartLine($product, min($qty, $variant?->stock ?? $product->stock), $variant);
+            $line = new CartLine($product, min($qty, $product->purchasableQuantity($variant)), $variant);
             $clean[$line->key()] = $line->quantity;
             $lines->push($line);
 
@@ -99,7 +99,7 @@ class CartService
         $key = self::key($product->id, $variant?->id);
         $current = $this->raw()[$key] ?? 0;
 
-        return $this->set($key, min($current + max(1, $quantity), $variant?->stock ?? $product->stock));
+        return $this->set($key, min($current + max(1, $quantity), $product->purchasableQuantity($variant)));
     }
 
     /** Ubah jumlah sebuah baris. Mengembalikan jumlah akhir (dibatasi stok). */
@@ -185,10 +185,10 @@ class CartService
 
         if ($product->has_variants) {
             // Produk bervarian wajib punya varian aktif yang valid.
-            return $variant && (int) $variant->product_id === $product->id && $variant->is_active && $variant->stock > 0;
+            return $variant && (int) $variant->product_id === $product->id && $product->variantAvailable($variant);
         }
 
-        return $variantId === null && $product->stock > 0;
+        return $variantId === null && $product->inStock();
     }
 
     private function set(string $key, int $quantity): int

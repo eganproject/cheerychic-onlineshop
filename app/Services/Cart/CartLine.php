@@ -37,7 +37,7 @@ final readonly class CartLine
 
     public function isLowStock(): bool
     {
-        return $this->availableStock() <= config('shop.low_stock_threshold');
+        return ! $this->isPreorder() && $this->availableStock() <= config('shop.low_stock_threshold');
     }
 
     public function unitPrice(): int
@@ -55,9 +55,10 @@ final readonly class CartLine
         return $this->variant?->weight ?: $this->product->weight;
     }
 
+    /** Jumlah maksimal di keranjang: stok, atau batas per baris untuk Pre Order. */
     public function availableStock(): int
     {
-        return $this->variant?->stock ?? $this->product->stock;
+        return $this->product->purchasableQuantity($this->variant);
     }
 
     public function sku(): ?string

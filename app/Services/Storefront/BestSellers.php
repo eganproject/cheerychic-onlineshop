@@ -87,7 +87,7 @@ class BestSellers
 
         $order = array_flip($ids);
 
-        return Product::active()->with('category')->whereIn('id', $ids)->where('stock', '>', 0)->get()
+        return Product::active()->with('category')->whereIn('id', $ids)->available()->get()
             ->sortBy(fn (Product $p) => $order[$p->id])
             ->take(self::LIMIT)
             ->values();

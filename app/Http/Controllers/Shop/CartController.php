@@ -42,7 +42,7 @@ class CartController extends Controller
             }
         }
 
-        if (! ($variant ?? $product)->inStock()) {
+        if (! ($variant ? $product->variantAvailable($variant) : $product->inStock())) {
             return $this->failed($request, 'Maaf, stok produk ini sedang habis.');
         }
 
@@ -57,9 +57,10 @@ class CartController extends Controller
         }
 
         $name = $variant ? "{$product->name} ({$variant->name})" : $product->name;
-        $stock = ($variant ?? $product)->stock;
+        $stock = $product->purchasableQuantity($variant);
 
         [$type, $message] = match (true) {
+            $product->isPreorder() && $added < $requested => ['warning', "Maksimal {$stock} pcs {$name} per pesanan Pre Order. Di keranjang: {$inCart} pcs."],
             $added < 1 => ['warning', "Stok {$name} tinggal {$stock} pcs dan semuanya sudah ada di keranjang."],
             $added < $requested => ['warning', "Hanya {$added} pcs {$name} yang bisa ditambahkan (stok tinggal {$stock}). Di keranjang: {$inCart} pcs."],
             $before > 0 => ['success', "{$added} pcs {$name} ditambahkan. Di keranjang sekarang {$inCart} pcs."],
@@ -99,6 +100,7 @@ class CartController extends Controller
         $final = $this->cart->update($line, $data['quantity']);
 
         [$type, $message] = match (true) {
+            $final < $data['quantity'] && $cartLine->isPreorder() => ['error', "Maksimal {$cartLine->availableStock()} pcs {$cartLine->name()} per pesanan Pre Order."],
             $final < $data['quantity'] => ['error', "Stok {$cartLine->name()} hanya tersisa {$cartLine->availableStock()}."],
             $final === 0 => ['success', "{$cartLine->name()} dihapus dari keranjang."],
             default => [null, null],

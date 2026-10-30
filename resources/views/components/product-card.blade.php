@@ -21,7 +21,7 @@
 
         <div class="pointer-events-none absolute bottom-2.5 left-2.5 flex flex-col items-start gap-1 sm:bottom-3 sm:left-3">
             @if ($soldOut)
-                <span class="tag bg-ink text-white">{{ $preorder ? 'Kuota PO habis' : 'Stok habis' }}</span>
+                <span class="tag bg-ink text-white">Stok habis</span>
             @else
                 @if ($preorder)
                     <span class="tag gap-1 bg-sage-600 text-white shadow-xs" title="{{ $product->preorderSummary() }}"><x-icon name="clock" class="size-3" /> Pre Order</span>
@@ -66,7 +66,7 @@
         @if ($quickAdd)
             @php($btn = 'relative z-10 mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-full border text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:h-10 sm:text-[13px]')
             @if ($soldOut)
-                <span class="{{ $btn }} border-stone-200 text-stone-400">{{ $preorder ? 'Kuota PO habis' : 'Stok habis' }}</span>
+                <span class="{{ $btn }} border-stone-200 text-stone-400">Stok habis</span>
             @elseif ($product->has_variants)
                 <a href="{{ route('products.show', $product) }}" class="{{ $btn }} border-brand-300 bg-brand-50 text-ink hover:border-brand-400 hover:bg-brand-400"
                    aria-label="Pilih {{ $variantLabel }} {{ $product->name }}">

@@ -153,7 +153,7 @@
                                   :tips="['Isi hanya saat sedang promo; kosongkan bila tidak diskon.', 'Harus lebih besar dari harga jual, kalau tidak, tidak dianggap diskon.']" />
                     <x-form.number name="stock" label="Stok" :value="$product->stock ?? 0" min="0" suffix="pcs" x-bind:required="!hasVariants" x-bind:disabled="hasVariants"
                                    :hint="$editing ? 'Perubahan tercatat di riwayat stok.' : null"
-                                   tip="Jumlah barang siap jual. Berkurang otomatis saat pembeli checkout dan kembali bila pesanan batal/kedaluwarsa. Stok 0 = tampil “Habis”. Untuk produk Pre Order, stok = kuota PO."
+                                   tip="Jumlah barang siap jual. Berkurang otomatis saat pembeli checkout dan kembali bila pesanan batal/kedaluwarsa. Stok 0 = tampil “Habis”. Produk Pre Order tidak memakai stok (bisa dipesan tanpa batas)."
                                    :tips="['Untuk barang masuk atau stock opname rutin, pakai menu Stok supaya alasannya tercatat.']" />
                     <input type="hidden" name="stock_original" value="{{ old('stock_original', $editing && ! $product->has_variants ? $product->stock : '') }}" :disabled="hasVariants">
                 </div>
@@ -264,9 +264,9 @@
                     <span>
                         <span class="flex items-center gap-1.5 font-bold text-stone-900">Pre Order
                             <x-tip title="Pre Order (PO)" text="Produk tetap bisa dibeli, tapi pembeli diberi tahu bahwa barang baru dikirim setelah masa produksi. Label “Pre Order” tampil di katalog, halaman produk, keranjang, checkout, dan pesanan."
-                                :tips="['Stok berfungsi sebagai kuota PO: isi jumlah pesanan yang sanggup diproduksi. Stok 0 = PO ditutup (tampil habis).', 'Matikan opsi ini begitu barang ready stock; pesanan yang sudah masuk tetap tercatat sebagai PO.']" />
+                                :tips="['PO tidak dibatasi jumlah: stok diabaikan dan tidak berkurang saat ada pesanan (maks. '.\App\Models\Product::PREORDER_MAX_QTY.' pcs per pesanan).', 'Untuk menutup PO, matikan opsi ini atau nonaktifkan produk.', 'Matikan opsi ini begitu barang ready stock; pesanan yang sudah masuk tetap tercatat sebagai PO.']" />
                         </span>
-                        <span class="text-xs text-stone-500">Dikirim setelah masa produksi</span>
+                        <span class="text-xs text-stone-500">Tanpa batas stok, dikirim setelah produksi</span>
                     </span>
                     <input type="hidden" name="is_preorder" value="0">
                     <input type="checkbox" name="is_preorder" value="1" x-model="preorder" class="checkbox size-5">

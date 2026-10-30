@@ -46,6 +46,7 @@ class LowStockReport
         return Product::query()
             ->where('is_active', true)
             ->where('has_variants', false)
+            ->where('is_preorder', false)
             ->where('stock', '<=', $this->threshold());
     }
 
@@ -54,6 +55,6 @@ class LowStockReport
         return ProductVariant::query()
             ->where('is_active', true)
             ->where('stock', '<=', $this->threshold())
-            ->whereHas('product', fn ($q) => $q->where('is_active', true)->where('has_variants', true));
+            ->whereHas('product', fn ($q) => $q->where('is_active', true)->where('has_variants', true)->where('is_preorder', false));
     }
 }

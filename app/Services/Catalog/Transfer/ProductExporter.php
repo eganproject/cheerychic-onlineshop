@@ -130,7 +130,7 @@ class ProductExporter
             ['berat_gram', 'Berat dalam gram untuk hitung ongkir. Kosong = 100 gram untuk produk baru.'],
             ['stok', 'Stok saat ini. Perubahan stok tercatat di riwayat stok. Kosong = stok produk lama tidak berubah.'],
             ['url_gambar', 'Opsional. Satu atau beberapa URL foto (pisahkan dengan |). Hanya diunduh bila produk belum punya foto.'],
-            ['pre_order_hari', 'Opsional. Isi lama proses Pre Order dalam hari (1–180) untuk menjadikan produk PO; stok berlaku sebagai kuota PO. Isi 0 = bukan PO (ready stock). Kosong = tidak berubah.'],
+            ['pre_order_hari', 'Opsional. Isi lama proses Pre Order dalam hari (1–180) untuk menjadikan produk PO; produk PO bisa dipesan tanpa batas stok. Isi 0 = bukan PO (ready stock). Kosong = tidak berubah.'],
             ['', ''],
             ['Catatan', 'Hanya sheet pertama yang dibaca. Kolom kosong pada produk lama tidak mengubah data. Produk yang salah satu barisnya error akan dilewati seluruhnya.'],
         ];

@@ -23,6 +23,9 @@ class Product extends Model
 {
     use HasFactory;
 
+    /** Batas jumlah per baris keranjang untuk produk Pre Order (PO tidak dibatasi stok). */
+    public const PREORDER_MAX_QTY = 99;
+
     // `stock`, `has_variants`, `rating_avg`, `review_count` sengaja tidak mass-assignable. Stok diubah lewat
     // StockService (tercatat di riwayat), ringkasan varian lewat syncVariantSummary(),
     // ringkasan rating lewat ReviewService::syncSummary().
@@ -117,6 +120,13 @@ class Product extends Model
         $query->where('is_preorder', true);
     }
 
+    /** Bisa dibeli sekarang: stok tersedia, atau produk Pre Order (tanpa batas stok). */
+    #[Scope]
+    protected function available(Builder $query): void
+    {
+        $query->where(fn (Builder $q) => $q->where('stock', '>', 0)->orWhere('is_preorder', true));
+    }
+
     #[Scope]
     protected function onSale(Builder $query): void
     {
@@ -193,14 +203,27 @@ class Product extends Model
             : 0;
     }
 
+    /** Bisa dibeli. Produk Pre Order selalu bisa dipesan tanpa melihat stok. */
     public function inStock(): bool
     {
-        return $this->stock > 0;
+        return $this->isPreorder() || $this->stock > 0;
+    }
+
+    /** Varian bisa dibeli: aktif dan (produk PO atau stok varian tersedia). */
+    public function variantAvailable(ProductVariant $variant): bool
+    {
+        return $variant->is_active && ($this->isPreorder() || $variant->stock > 0);
+    }
+
+    /** Jumlah maksimal yang boleh dibeli per baris: stok, atau batas wajar untuk PO. */
+    public function purchasableQuantity(?ProductVariant $variant = null): int
+    {
+        return $this->isPreorder() ? self::PREORDER_MAX_QTY : (int) ($variant?->stock ?? $this->stock);
     }
 
     /**
-     * Produk Pre Order: dibeli seperti biasa (stok = kuota PO), tapi baru
-     * dikirim setelah masa produksi `preorder_days` hari sejak pembayaran.
+     * Produk Pre Order: bisa dipesan tanpa batas stok (stok tidak dikurangi),
+     * lalu dikirim setelah masa produksi `preorder_days` hari sejak pembayaran.
      */
     public function isPreorder(): bool
     {
@@ -239,6 +262,6 @@ class Product extends Model
 
     public function isLowStock(): bool
     {
-        return $this->stock <= config('shop.low_stock_threshold');
+        return ! $this->isPreorder() && $this->stock <= config('shop.low_stock_threshold');
     }
 }

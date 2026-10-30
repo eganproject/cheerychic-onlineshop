@@ -45,7 +45,7 @@ class ProductController extends Controller
             ->search($request->string('q')->trim()->value() ?: null)
             ->when($category, fn ($q) => $q->whereIn('category_id', $category->familyIds()))
             ->when($collection, fn ($q) => $q->inCollection($collection))
-            ->when($request->boolean('tersedia'), fn ($q) => $q->where('stock', '>', 0))
+            ->when($request->boolean('tersedia'), fn ($q) => $q->available())
             ->when($request->boolean('promo'), fn ($q) => $q->onSale())
             ->when($request->boolean('po'), fn ($q) => $q->preorder())
             ->when($minPrice, fn ($q) => $q->where('price', '>=', $minPrice))

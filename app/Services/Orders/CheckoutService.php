@@ -55,7 +55,10 @@ class CheckoutService
             foreach ($lines as $line) {
                 $product = $products->get($line->product->id);
                 $variant = $line->variant ? $variants->get($line->variant->id) : null;
-                $available = $variant ? ($variant->is_active ? $variant->stock : 0) : $product?->stock;
+                $available = ! $product ? 0 : match (true) {
+                    $variant !== null => $product->variantAvailable($variant) ? $product->purchasableQuantity($variant) : 0,
+                    default => $product->purchasableQuantity(),
+                };
 
                 if (! $product || ! $product->is_active || ($line->variant && ! $variant) || $available < $line->quantity) {
                     $name = $line->variant ? "{$line->product->name} ({$line->variant->name})" : $line->product->name;
@@ -118,7 +121,8 @@ class CheckoutService
 
             $order->items()->createMany(array_column($items, 'attributes'));
 
-            foreach ($items as $item) {
+            // Produk Pre Order tidak memakai stok, jadi tidak dikurangi.
+            foreach (array_filter($items, fn ($item) => ! $item['attributes']['is_preorder']) as $item) {
                 $this->stock->adjust(
                     $item['product'], $item['variant'], -$item['quantity'],
                     StockMovementType::Sale, order: $order,

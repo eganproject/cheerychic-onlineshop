@@ -78,7 +78,11 @@
                                     @if ($product->isOnSale())<p class="text-xs text-stone-400 line-through">@rupiah($product->compare_at_price)</p>@endif
                                 </td>
                                 <td>
+                                    @if ($product->is_preorder)
+                                        <span class="font-semibold text-sky-700" title="Pre Order tidak dibatasi stok">PO</span>
+                                    @else
                                     <span @class(['font-semibold', 'text-rose-600' => $product->stock === 0, 'text-amber-600' => $product->stock > 0 && $product->isLowStock(), 'text-stone-700' => ! $product->isLowStock()])>{{ $product->stock }}</span>
+                                    @endif
                                 </td>
                                 <td class="hidden sm:table-cell">
                                     <div class="flex flex-wrap gap-1">

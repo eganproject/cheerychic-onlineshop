@@ -17,21 +17,24 @@
     @php
         $variants = $product->activeVariants;
         $images = $product->images;
+        // Pre Order tidak dibatasi stok: jumlah maksimal = batas per pesanan.
+        $preorder = $product->isPreorder();
+        $buyable = fn ($v) => $preorder ? \App\Models\Product::PREORDER_MAX_QTY : $v->stock;
+        $available = $variants->filter(fn ($v) => $product->variantAvailable($v));
         $pageConfig = [
             'images' => $images->map(fn ($i) => ['id' => $i->id, 'url' => $i->url()])->values(),
             'variants' => $variants->map(fn ($v) => [
                 'id' => $v->id, 'name' => $v->name, 'price' => $v->price, 'compare_at_price' => $v->compare_at_price,
-                'stock' => $v->stock, 'image_id' => $v->product_image_id, 'sku' => $v->sku,
+                'stock' => $buyable($v), 'image_id' => $v->product_image_id, 'sku' => $v->sku,
             ])->values(),
             // Pilih otomatis bila hanya ada satu varian yang tersedia.
-            'selectedId' => old('variant_id') ? (int) old('variant_id') : ($variants->where('stock', '>', 0)->count() === 1 ? $variants->firstWhere('stock', '>', 0)->id : null),
+            'selectedId' => old('variant_id') ? (int) old('variant_id') : ($available->count() === 1 ? $available->first()->id : null),
             'price' => $product->price,
             'compareAt' => $product->compare_at_price,
-            'stock' => $product->stock,
+            'stock' => $product->purchasableQuantity(),
         ];
         $priceRange = $variants->isNotEmpty() && $variants->pluck('price')->unique()->count() > 1;
         $lowStock = config('shop.low_stock_threshold');
-        $preorder = $product->isPreorder();
         $sportFor = $product->category ? $product->category->name.' '.($product->category->parent?->name) : $product->name;
 
         $tabs = array_filter([
@@ -160,7 +163,7 @@
                         </div>
 
                         @if ($preorder)
-                            {{-- Pre Order: stok = kuota PO yang masih dibuka. --}}
+                            {{-- Pre Order: bisa dipesan tanpa batas stok. --}}
                             <div class="mt-4 rounded-2xl border border-sage-200 bg-sage-50 p-4 text-sm">
                                 <p class="flex items-center gap-2 font-semibold text-sage-600">
                                     <x-icon name="clock" class="size-4" /> Pre Order · {{ $product->preorderSummary() }}
@@ -169,10 +172,7 @@
                                     <p class="mt-1 text-stone-600">{{ $product->preorder_note }}</p>
                                 @endif
                                 <p class="mt-2 flex items-center gap-2 text-stone-600">
-                                    <span class="size-2 rounded-full" :class="stock < 1 ? 'bg-stone-400' : (stock <= {{ $lowStock }} ? 'bg-amber-500' : 'bg-emerald-500')"></span>
-                                    <span x-text="stock < 1 ? 'Kuota PO habis' : (stock <= {{ $lowStock }} ? `Kuota PO tersisa ${stock}` : 'Kuota PO masih tersedia')">
-                                        {{ ! $product->inStock() ? 'Kuota PO habis' : ($product->isLowStock() ? 'Kuota PO tersisa '.$product->stock : 'Kuota PO masih tersedia') }}
-                                    </span>
+                                    <span class="size-2 rounded-full bg-emerald-500"></span> Bisa dipesan, dibuat khusus untukmu
                                 </p>
                             </div>
                         @else
@@ -194,8 +194,9 @@
                                     </p>
                                     <div class="mt-3 flex flex-wrap gap-2">
                                         @foreach ($variants as $variant)
-                                            <button type="button" @click="select(@js(['id' => $variant->id, 'stock' => $variant->stock, 'image_id' => $variant->product_image_id]))"
-                                                    @disabled(! $variant->inStock())
+                                            @php($variantOk = $product->variantAvailable($variant))
+                                            <button type="button" @click="select(@js(['id' => $variant->id, 'stock' => $buyable($variant), 'image_id' => $variant->product_image_id]))"
+                                                    @disabled(! $variantOk)
                                                     :aria-pressed="selectedId === {{ $variant->id }}"
                                                     :class="selectedId === {{ $variant->id }} ? 'border-ink ring-1 ring-ink' : 'border-stone-200 hover:border-stone-400'"
                                                     class="relative flex min-h-11 items-center gap-2 rounded-xl border bg-white px-3.5 py-2 text-left text-sm font-medium transition disabled:cursor-not-allowed disabled:border-dashed disabled:text-stone-300">
@@ -203,8 +204,8 @@
                                                     <img src="{{ $variant->image->url() }}" referrerpolicy="no-referrer" alt="" class="size-7 shrink-0 rounded-md object-cover">
                                                 @endif
                                                 <span class="min-w-0 leading-tight">
-                                                    <span @class(['block truncate', 'line-through' => ! $variant->inStock()])>{{ $variant->name }}</span>
-                                                    @unless ($variant->inStock())<span class="block text-[11px] font-normal no-underline">Habis</span>@endunless
+                                                    <span @class(['block truncate', 'line-through' => ! $variantOk])>{{ $variant->name }}</span>
+                                                    @unless ($variantOk)<span class="block text-[11px] font-normal no-underline">Habis</span>@endunless
                                                 </span>
                                             </button>
                                         @endforeach
@@ -238,7 +239,7 @@
                                 <button form="add-to-cart" name="buy_now" value="1" class="btn btn-ink btn-pill mt-2 min-h-14 w-full text-[15px]">{{ $preorder ? 'Pre Order sekarang' : 'Beli sekarang' }}</button>
                             @else
                                 <div class="rounded-2xl bg-sand-100 p-5 text-sm text-stone-600">
-                                    {{ $preorder ? 'Kuota Pre Order produk ini sudah penuh.' : 'Produk ini sedang habis.' }}
+                                    Produk ini sedang habis.
                                     @if (config('shop.whatsapp'))
                                         <a href="https://wa.me/{{ config('shop.whatsapp') }}?text={{ urlencode('Halo, kapan '.$product->name.' tersedia lagi?') }}" target="_blank" rel="noopener" class="link-underline font-semibold text-ink">Tanya ketersediaan</a>
                                     @endif

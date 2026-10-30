@@ -53,7 +53,7 @@
                                 <button name="quantity" value="{{ $line->quantity + 1 }}" class="grid size-10 place-items-center rounded-full hover:bg-sand-100 disabled:opacity-30 lg:size-9" aria-label="Tambah" data-step="1" data-cart-focus="{{ $line->key() }}:plus" @disabled($line->quantity >= $line->availableStock())><x-icon name="plus" class="size-3.5" /></button>
                             </form>
                             @if ($line->isLowStock())
-                                <span class="text-xs font-medium text-amber-700">{{ $line->isPreorder() ? 'Kuota PO sisa' : 'Sisa' }} {{ $line->availableStock() }}</span>
+                                <span class="text-xs font-medium text-amber-700">Sisa {{ $line->availableStock() }}</span>
                             @endif
                             </div>
                             <form method="POST" action="{{ route('cart.destroy', $line->key()) }}" data-cart-line>
