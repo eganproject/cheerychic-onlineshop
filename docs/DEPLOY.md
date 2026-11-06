@@ -24,6 +24,8 @@ Setelah selesai, selalu jalankan `php artisan shop:check` untuk memastikan konfi
 
 ## A. Deploy di VPS
 
+> **Cara cepat:** VPS Ubuntu kosong bisa disiapkan otomatis dengan `deploy/setup-vps.sh`. Penjelasan tiap langkahnya ada di [SETUP-VPS.md](SETUP-VPS.md). Langkah manual di bawah ini untuk server yang sudah berisi aplikasi lain.
+
 ### 1. Siapkan paket
 
 ```bash
@@ -68,8 +70,8 @@ FLUSH PRIVILEGES;
 ```bash
 sudo mkdir -p /var/www && sudo chown $USER:www-data /var/www
 cd /var/www
-git clone https://github.com/eganproject/Al-baniah-onlineshop.git
-cd Al-baniah-onlineshop
+git clone https://github.com/eganproject/cheerychic-onlineshop.git
+cd cheerychic-onlineshop
 
 cp .env.production.example .env
 nano .env                       # isi semua bagian <...>

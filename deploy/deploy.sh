@@ -33,7 +33,8 @@ echo "==> Restart worker antrean"
 php artisan queue:restart
 
 # OPcache: muat ulang PHP-FPM bila user ini punya izin (abaikan bila tidak).
-sudo -n systemctl reload php8.3-fpm 2>/dev/null || true
+PHP_VER="$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')"
+sudo -n systemctl reload "php${PHP_VER}-fpm" 2>/dev/null || true
 
 echo "==> Selesai"
 php artisan shop:check || true
