@@ -40,7 +40,7 @@ class StorefrontTest extends TestCase
             ->assertSee('Kategori')
             ->assertSee('Casing HP')
             ->assertSee('Kabel Data')
-            ->assertSee('Diskon 10% untuk pembelian pertama: pakai kode CERIA10', false);
+            ->assertSee('Daster, dress &amp; one set rayon premium yang adem dan jatuh', false);
     }
 
     public function test_best_sellers_are_ordered_by_paid_sales_and_filled_with_other_products(): void

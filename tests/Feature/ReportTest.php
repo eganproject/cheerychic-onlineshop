@@ -13,6 +13,7 @@ use App\Services\Reports\ReportPeriod;
 use App\Services\Reports\SalesReportService;
 use App\Support\Money;
 use App\View\Components\Admin\SalesChart;
+use Database\Seeders\DemoOrderSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -255,6 +256,9 @@ class ReportTest extends TestCase
     public function test_demo_seeder_builds_report_data(): void
     {
         $this->seed();
+        $this->assertSame(0, Order::count());
+
+        Order::withoutEvents(fn () => $this->seed(DemoOrderSeeder::class));
 
         $this->assertTrue(Order::count() > 50);
         $this->assertTrue(DB::table('order_items')->count() > 50);
