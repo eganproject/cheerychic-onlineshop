@@ -17,6 +17,13 @@
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
     </url>
+@foreach (array_keys(\App\Http\Controllers\Shop\PageController::PAGES) as $page)
+    <url>
+        <loc>{{ route('pages.show', $page) }}</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+@endforeach
 @foreach ($categories as $category)
     <url>
         <loc>{{ route('products.index', ['kategori' => $category->slug]) }}</loc>

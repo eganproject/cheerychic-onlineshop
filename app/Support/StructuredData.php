@@ -29,6 +29,7 @@ class StructuredData
                 'offerCount' => $variants->count(),
                 'availability' => $availability,
                 'url' => $url,
+                'hasMerchantReturnPolicy' => self::returnPolicy(),
             ]
             : [
                 '@type' => 'Offer',
@@ -38,6 +39,7 @@ class StructuredData
                 'itemCondition' => 'https://schema.org/NewCondition',
                 'url' => $url,
                 'seller' => ['@type' => 'Organization', 'name' => config('shop.full_name')],
+                'hasMerchantReturnPolicy' => self::returnPolicy(),
             ];
 
         $data = [
@@ -48,6 +50,7 @@ class StructuredData
             'url' => $url,
             'image' => $product->images->map->url()->values()->all() ?: null,
             'sku' => $product->sku,
+            'brand' => ['@type' => 'Brand', 'name' => config('shop.full_name')],
             'category' => $product->category?->name,
             'offers' => $offers,
         ];
@@ -134,6 +137,9 @@ class StructuredData
                         config('shop.tiktok') ? 'https://www.tiktok.com/@'.ltrim(config('shop.tiktok'), '@') : null,
                         config('shop.facebook') ?: null,
                     ])) ?: null,
+                    'email' => config('shop.email') ?: null,
+                    'telephone' => config('shop.whatsapp') ? '+'.ltrim(config('shop.whatsapp'), '+') : null,
+                    'hasMerchantReturnPolicy' => self::returnPolicy(),
                 ]),
                 [
                     '@type' => 'WebSite',
@@ -148,6 +154,33 @@ class StructuredData
                     ],
                 ],
             ],
+        ];
+    }
+
+    /** Kebijakan tukar/retur toko (dipakai Google untuk info retur di hasil pencarian). */
+    public static function returnPolicy(): array
+    {
+        return [
+            '@type' => 'MerchantReturnPolicy',
+            'applicableCountry' => 'ID',
+            'returnPolicyCategory' => 'https://schema.org/MerchantReturnFiniteReturnWindow',
+            'merchantReturnDays' => config('shop.policy.return_days'),
+            'returnMethod' => 'https://schema.org/ReturnByMail',
+            'merchantReturnLink' => route('pages.show', 'kebijakan-pengembalian'),
+        ];
+    }
+
+    /** @param  array<int, array{q: string, a: string}>  $items */
+    public static function faq(array $items): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => collect($items)->map(fn ($item) => [
+                '@type' => 'Question',
+                'name' => $item['q'],
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => strip_tags($item['a'])],
+            ])->values()->all(),
         ];
     }
 

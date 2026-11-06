@@ -323,6 +323,47 @@ class Product extends Model
     }
 
     /** Ringkasan singkat untuk meta description / Open Graph. */
+    /**
+     * Title halaman produk untuk mesin pencari: nama + kategori + kata kunci bahan,
+     * selama masih muat ±60 karakter bersama " · Cheery Chic". Kata yang sudah ada di nama tidak diulang.
+     */
+    public function seoTitle(): string
+    {
+        $max = 60 - mb_strlen(' · '.config('shop.full_name'));
+        $title = $this->name;
+
+        foreach ([$this->category?->name, config('shop.seo.product_keyword')] as $extra) {
+            if (! $extra || Str::contains(Str::lower($title), Str::lower($extra))) {
+                continue;
+            }
+            $candidate = $title.($title === $this->name ? ' – ' : ' ').$extra;
+            if (mb_strlen($candidate) <= $max) {
+                $title = $candidate;
+            }
+        }
+
+        return $title;
+    }
+
+    /**
+     * Teks alt foto galeri: pakai nama motif bila foto itu milik varian (`product_image_id`).
+     *
+     * @return array<int, string> [image_id => alt]
+     */
+    public function imageAlts(): array
+    {
+        $variants = $this->relationLoaded('activeVariants') ? $this->activeVariants : collect();
+        $byImage = $variants->whereNotNull('product_image_id')->groupBy('product_image_id');
+
+        return $this->images->values()->mapWithKeys(function ($image, $index) use ($byImage) {
+            $names = $byImage->get($image->id)?->pluck('name')->unique()->implode(', ');
+
+            return [$image->id => $names
+                ? $this->name.' motif '.$names
+                : $this->name.($index === 0 ? '' : ' — foto '.($index + 1))];
+        })->all();
+    }
+
     public function metaDescription(): string
     {
         $text = trim(preg_replace('/\s+/', ' ', strip_tags((string) $this->description)));

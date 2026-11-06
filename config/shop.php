@@ -188,6 +188,24 @@ return [
         'indexing' => (bool) env('SEO_INDEXING', true),
         'description' => env('SEO_DESCRIPTION', 'Cheery Chic: daster, dress, dan one set rayon premium yang adem dan bermotif ceria. LD 120 all size, busui friendly, kirim ke seluruh Indonesia.'),
         'default_image' => env('SEO_DEFAULT_IMAGE') ?: 'images/brand/og-default.png',
+        // Title beranda (maks ±60 karakter supaya tidak terpotong di Google).
+        'home_title' => env('SEO_HOME_TITLE', 'Cheery Chic · Daster Rayon Premium, Dress & One Set'),
+        // Kata kunci bahan yang ditambahkan ke title produk bila masih muat.
+        'product_keyword' => env('SEO_PRODUCT_KEYWORD', 'Rayon Premium'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kebijakan Toko
+    |--------------------------------------------------------------------------
+    |
+    | Dipakai di halaman Kebijakan Pengembalian dan data terstruktur Google
+    | (MerchantReturnPolicy). return_days = batas tukar sejak paket diterima.
+    |
+    */
+
+    'policy' => [
+        'return_days' => (int) env('SHOP_RETURN_DAYS', 7),
     ],
 
 ];

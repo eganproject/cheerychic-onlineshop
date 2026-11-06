@@ -9,7 +9,8 @@
     'viewportFit' => false,
 ])
 @php
-    $pageTitle = $title ? $title.' · '.config('shop.full_name') : config('shop.full_name').' · '.config('shop.tagline');
+    $pageTitle = $title ? $title.' · '.config('shop.full_name') : config('shop.seo.home_title');
+    $shareTitle = $title ?: $pageTitle;
     $metaDescription = \Illuminate\Support\Str::limit($description ?: config('shop.seo.description'), 160);
     $canonicalUrl = $canonical ?: \App\Support\Seo::canonical(request());
     $index = ! $noindex && \App\Support\Seo::shouldIndex(request());
@@ -31,15 +32,15 @@
     <meta property="og:site_name" content="{{ config('shop.full_name') }}">
     <meta property="og:locale" content="id_ID">
     <meta property="og:type" content="{{ $type }}">
-    <meta property="og:title" content="{{ $title ?: config('shop.full_name') }}">
+    <meta property="og:title" content="{{ $shareTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:url" content="{{ $canonicalUrl }}">
     @if ($ogImage)
         <meta property="og:image" content="{{ $ogImage }}">
-        <meta property="og:image:alt" content="{{ $title ?: config('shop.full_name') }}">
+        <meta property="og:image:alt" content="{{ $shareTitle }}">
     @endif
     <meta name="twitter:card" content="{{ $ogImage ? 'summary_large_image' : 'summary' }}">
-    <meta name="twitter:title" content="{{ $title ?: config('shop.full_name') }}">
+    <meta name="twitter:title" content="{{ $shareTitle }}">
     <meta name="twitter:description" content="{{ $metaDescription }}">
     @if ($ogImage)
         <meta name="twitter:image" content="{{ $ogImage }}">
