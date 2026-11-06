@@ -27,14 +27,23 @@ npm run dev        # atau npm run build
 php artisan serve
 ```
 
-Akun contoh dari seeder (password: `password`):
+Seeder hanya mengisi katalog (produk, kategori, koleksi) dan akun staf berikut
+(password: `password`). Pesanan, pelanggan, ulasan, voucher, dan artikel dimulai
+kosong; untuk data demo laporan jalankan `php artisan db:seed --class=DemoOrderSeeder`
+(dan `--class=ArticleSeeder` untuk artikel contoh).
+
+Untuk mengosongkan database yang sudah terisi tanpa menyentuh produk:
+`php artisan shop:clear-data` (pesanan, pelanggan, ulasan, wishlist, voucher,
+banner, artikel, log aktivitas, riwayat impor dihapus; produk, stok, kategori,
+koleksi, akun staf, dan pengaturan toko tetap).
+
+Akun staf:
 
 | Peran | Email |
 |---|---|
 | Owner (akses penuh) | `admin@cheerychic.test` |
 | Staf Gudang | `gudang@cheerychic.test` |
 | Customer Service | `cs@cheerychic.test` |
-| Pelanggan | `pelanggan@cheerychic.test` |
 
 Panel admin punya jabatan staf (Owner, Admin, Staf Gudang, Customer Service).
 Hak akses tiap jabatan ada di `App\Enums\StaffRole::permissions()`; route admin

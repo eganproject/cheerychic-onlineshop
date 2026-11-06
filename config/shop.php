@@ -54,8 +54,7 @@ return [
         'hero_secondary_url' => '/produk?promo=1',
         'hero_text' => 'dark',
         'announcements' => [
-            'Gratis ongkir untuk belanja minimal Rp150.000 pakai kode ONGKIRGRATIS',
-            'Diskon 10% untuk pembelian pertama: pakai kode CERIA10',
+            'Daster, dress & one set rayon premium yang adem dan jatuh',
             'Semua koleksi rayon premium, adem & LD 120 all size',
         ],
         // Tab Best Seller: "auto" (terlaris 90 hari) atau "manual" (pilihan admin, berurutan).
