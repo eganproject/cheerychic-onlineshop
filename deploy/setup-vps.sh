@@ -289,6 +289,15 @@ EOF
 supervisorctl reread && supervisorctl update
 supervisorctl restart 'cheerychic-worker:*' || true
 
+# Perintah update satu kata untuk root: update-cheerychic
+cat > /usr/local/bin/update-cheerychic <<EOF
+#!/usr/bin/env bash
+# Ambil kode terbaru dari GitHub lalu build & migrasi (dijalankan sebagai user ${APP_USER}).
+set -e
+exec sudo -u ${APP_USER} -H bash -c 'cd ${APP_DIR} && bash deploy/deploy.sh'
+EOF
+chmod 755 /usr/local/bin/update-cheerychic
+
 CRON_LINE="* * * * * cd ${APP_DIR} && php artisan schedule:run >> /dev/null 2>&1"
 ( crontab -u "$APP_USER" -l 2>/dev/null | grep -vF 'artisan schedule:run'; echo "$CRON_LINE" ) | crontab -u "$APP_USER" -
 
@@ -309,7 +318,7 @@ cat <<EOF
  Selesai. Toko: ${PROTO}://${DOMAIN}    Admin: ${PROTO}://${DOMAIN}/admin
  Folder aplikasi : ${APP_DIR} (user: ${APP_USER})
  Password DB     : ${CRED_FILE}
- Update kode     : sudo -iu ${APP_USER} bash -c 'cd ${APP_DIR} && bash deploy/deploy.sh'
+ Update kode     : update-cheerychic   (jalankan sebagai root)
 EOF
 if ! $SSL_OK; then
 cat <<EOF

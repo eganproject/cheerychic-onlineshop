@@ -65,13 +65,18 @@ cd /var/www/cheerychic && php artisan optimize
 
 ## Perintah sehari-hari
 
+Update toko dari GitHub cukup satu perintah sebagai root (tidak perlu pindah user):
+
+```bash
+update-cheerychic
+```
+
+Perintah ini menjalankan `deploy/deploy.sh` sebagai user `cheerychic`: mode perawatan, `git pull`, composer, build aset, migrasi, cache, restart worker. Lainnya:
+
 ```bash
 # Masuk sebagai user aplikasi
 sudo -iu cheerychic
 cd /var/www/cheerychic
-
-# Ambil kode terbaru dari GitHub + build + migrasi
-bash deploy/deploy.sh
 
 # Lihat log error
 tail -f storage/logs/laravel-$(date +%F).log
