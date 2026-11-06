@@ -444,6 +444,10 @@
                                 <li><a href="{{ $accountUrl }}" class="{{ $footLink }}">Akun saya</a></li>
                                 <li><a href="{{ route('cart.index') }}" class="{{ $footLink }}">Keranjang</a></li>
                                 <li><a href="{{ route('articles.index') }}" class="{{ $footLink }}">Artikel &amp; inspirasi</a></li>
+                                <li><a href="{{ route('pages.show', 'faq') }}" class="{{ $footLink }}">FAQ &amp; cara pesan</a></li>
+                                <li><a href="{{ route('pages.show', 'kebijakan-pengembalian') }}" class="{{ $footLink }}">Tukar &amp; pengembalian</a></li>
+                                <li><a href="{{ route('pages.show', 'tentang-kami') }}" class="{{ $footLink }}">Tentang kami</a></li>
+                                <li><a href="{{ route('pages.show', 'kontak') }}" class="{{ $footLink }}">Hubungi kami</a></li>
                                 @if ($whatsapp)
                                     <li><a href="https://wa.me/{{ $whatsapp }}" target="_blank" rel="noopener" class="{{ $footLink }}">WhatsApp</a></li>
                                 @endif

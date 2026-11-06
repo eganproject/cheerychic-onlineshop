@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\Shop\PageController;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
@@ -88,5 +89,42 @@ class SeoTest extends TestCase
         config(['shop.seo.indexing' => false]);
         $this->get('/robots.txt')->assertSee('Disallow: /')->assertDontSee('Sitemap:');
         $this->get(route('home'))->assertSee('noindex, follow', false);
+    }
+
+    public function test_home_title_is_short_and_product_title_has_keywords(): void
+    {
+        $this->get(route('home'))->assertSee('<title>'.e(config('shop.seo.home_title')).'</title>', false);
+        $this->assertLessThanOrEqual(60, mb_strlen(config('shop.seo.home_title')));
+
+        $category = Category::factory()->create(['name' => 'Daster']);
+        $product = Product::factory()->create(['name' => 'Aluna Dress', 'category_id' => $category->id]);
+
+        $this->assertSame('Aluna Dress – Daster Rayon Premium', $product->seoTitle());
+        $this->get(route('products.show', $product))
+            ->assertSee('<title>Aluna Dress – Daster Rayon Premium · '.config('shop.full_name').'</title>', false)
+            ->assertSee('"brand":{"@type":"Brand"', false)
+            ->assertSee('"@type":"MerchantReturnPolicy"', false);
+    }
+
+    public function test_seo_title_does_not_repeat_words_or_exceed_limit(): void
+    {
+        $category = Category::factory()->create(['name' => 'One Set']);
+        $product = Product::factory()->create(['name' => 'Almira One Set', 'category_id' => $category->id]);
+        $this->assertSame('Almira One Set – Rayon Premium', $product->seoTitle());
+
+        // Nama yang sudah panjang tidak ditambah apa-apa.
+        $long = Product::factory()->create(['name' => 'Daster Rayon Motif Bunga Matahari Edisi Lebaran', 'category_id' => $category->id]);
+        $this->assertSame($long->name, $long->seoTitle());
+    }
+
+    public function test_info_pages_are_indexable_and_listed_in_sitemap(): void
+    {
+        foreach (array_keys(PageController::PAGES) as $page) {
+            $this->get(route('pages.show', $page))->assertOk()->assertSee('index, follow, max-image-preview:large', false);
+        }
+
+        $this->get(route('pages.show', 'faq'))->assertSee('"@type":"FAQPage"', false);
+        $this->get(route('sitemap'))->assertSee(route('pages.show', 'kebijakan-pengembalian'), false);
+        $this->get('/bukan-halaman')->assertNotFound();
     }
 }

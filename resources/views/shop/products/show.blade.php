@@ -1,4 +1,4 @@
-<x-layouts.shop :title="$product->name" :description="$product->metaDescription()" :image="$product->imageUrl()" type="product" :bottom-nav="! $product->inStock()" :whatsapp-text="'Halo '.config('shop.name').', saya mau tanya tentang '.$product->name.': '.route('products.show', $product)">
+<x-layouts.shop :title="$product->seoTitle()" :description="$product->metaDescription()" :image="$product->imageUrl()" type="product" :bottom-nav="! $product->inStock()" :whatsapp-text="'Halo '.config('shop.name').', saya mau tanya tentang '.$product->name.': '.route('products.show', $product)">
     <x-slot:head>
         <meta property="product:price:amount" content="{{ $product->price }}">
         <meta property="product:price:currency" content="IDR">
@@ -17,6 +17,7 @@
     @php
         $variants = $product->activeVariants;
         $images = $product->images;
+        $imageAlts = $product->imageAlts();
         // Pre Order tidak dibatasi stok: jumlah maksimal = batas per pesanan.
         $preorder = $product->isPreorder();
         $buyable = fn ($v) => $preorder ? \App\Models\Product::PREORDER_MAX_QTY : $v->stock;
@@ -90,7 +91,7 @@
                                      @scroll.debounce.80ms="active = Math.round($el.scrollLeft / $el.clientWidth)"
                                      x-effect="const i = active; $nextTick(() => { if (Math.round($el.scrollLeft / $el.clientWidth) !== i) $el.scrollTo({ left: i * $el.clientWidth, behavior: 'smooth' }) })">
                                     @foreach ($images as $index => $image)
-                                        <img src="{{ $image->url() }}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'" alt="{{ $product->name }} — foto {{ $index + 1 }}" @if ($index > 0) loading="lazy" @endif decoding="async"
+                                        <img src="{{ $image->url() }}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'" alt="{{ $imageAlts[$image->id] ?? $product->name }}" @if ($index > 0) loading="lazy" @endif decoding="async"
                                              class="aspect-square w-full shrink-0 snap-center object-cover">
                                     @endforeach
                                 </div>
@@ -98,7 +99,7 @@
                                 {{-- Desktop: foto utama --}}
                                 <div class="relative hidden aspect-square overflow-hidden rounded-2xl bg-sand-100 lg:block">
                                     @foreach ($images as $index => $image)
-                                        <img src="{{ $image->url() }}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'" alt="{{ $product->name }} — foto {{ $index + 1 }}"
+                                        <img src="{{ $image->url() }}" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'" alt="{{ $imageAlts[$image->id] ?? $product->name }}"
                                              @if ($index > 0) loading="lazy" x-cloak @endif decoding="async"
                                              x-show="active === {{ $index }}" x-transition.opacity.duration.200ms
                                              class="absolute inset-0 size-full object-cover">

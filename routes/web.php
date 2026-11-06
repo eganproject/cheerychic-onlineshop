@@ -33,6 +33,8 @@ Route::permanentRedirect('/products', '/produk');
 Route::permanentRedirect('/shop', '/produk');
 Route::permanentRedirect('/blog', '/artikel');
 
+Route::get('/{page}', Shop\PageController::class)->whereIn('page', array_keys(Shop\PageController::PAGES))->name('pages.show');
+
 Route::get('/sitemap.xml', Shop\SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', Shop\RobotsController::class)->name('robots');
 
